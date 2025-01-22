@@ -10,6 +10,6 @@ public class KingMoveCalc extends PieceMoveCalc {
     }
 
     public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-
+        throw new RuntimeException("Not implemented");
     }
 }
