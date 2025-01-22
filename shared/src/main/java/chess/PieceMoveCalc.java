@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PieceMoveCalc {
-
     private Collection<ChessMove> moves = new ArrayList<>();
-    private final ChessPiece myPiece;
-    public PieceMoveCalc(ChessPiece myPiece, Collection<ChessMove> moves) {
-        this.myPiece = myPiece;
-        this.moves = moves;
-
+    public PieceMoveCalc() {
     }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        ChessPiece myPiece = board.getPiece(myPosition);
         if(myPiece.getPieceType() == ChessPiece.PieceType.KING){
-            KingMoveCalc kingMoveCalc = new KingMoveCalc(myPiece, moves);
+            KingMoveCalc kingMoveCalc = new KingMoveCalc();
             moves = kingMoveCalc.kingMoves(board, myPosition);
         };
         if(myPiece.getPieceType() == ChessPiece.PieceType.QUEEN){

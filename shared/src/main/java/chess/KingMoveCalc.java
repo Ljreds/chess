@@ -5,11 +5,25 @@ import java.util.Collection;
 
 public class KingMoveCalc extends PieceMoveCalc {
 
-    public KingMoveCalc(ChessPiece myPiece, Collection<ChessMove> moves) {
-        super(myPiece, moves);
+    private final Collection<ChessMove> moves = new ArrayList<>();
+
+    public KingMoveCalc() {
     }
 
     public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessPiece myPiece = board.getPiece(myPosition);
+
+        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col+1), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col+1), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col-1), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row, col-1), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col-1), myPiece.getPieceType()));
+
+        return moves;
     }
 }
