@@ -24,6 +24,25 @@ public class KingMoveCalc extends PieceMoveCalc {
         moves.add(new ChessMove(myPosition, new ChessPosition(row, col-1), myPiece.getPieceType()));
         moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col-1), myPiece.getPieceType()));
 
-        return moves;
+        return PieceMoveCalc.borderPatrol(board, pieceBlockKing(board, moves));
+    }
+
+    public static Collection<ChessMove> pieceBlockKing(ChessBoard board, Collection<ChessMove> moves) {
+        Collection<ChessMove> result = new ArrayList<>();
+        for (ChessMove move : moves) {
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+            ChessPiece piece = board.getPiece(start);
+            ChessPiece endPiece = board.getPiece(end);
+            if(endPiece == null){
+                result.add(move);
+            }else if(piece.getTeamColor() == endPiece.getTeamColor()){
+                continue;
+
+            }else if(endPiece.getTeamColor() != piece.getTeamColor()){
+                result.add(move);
+            }
+        }
+        return result;
     }
 }

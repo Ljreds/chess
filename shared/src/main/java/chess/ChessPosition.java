@@ -16,6 +16,17 @@ public class ChessPosition {
         this.col = col;
     }
 
+
+    public boolean equals(ChessPosition other) {
+        return this.row == other.row && this.col == other.col;
+    }
+
+    public int hashCode(){
+        int hash = 7;
+        hash = 31 * hash + this.row;
+        hash = 31 * hash + this.col;
+        return hash;
+    }
     /**
      * @return which row this position is in
      * 1 codes for the bottom row

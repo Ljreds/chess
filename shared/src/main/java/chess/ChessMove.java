@@ -15,6 +15,16 @@ public class ChessMove {
         this.endPosition = endPosition;
     }
 
+    public boolean equals(ChessMove other) {
+        return startPosition.equals(other.startPosition) && endPosition.equals(other.endPosition);
+    }
+
+    public int hashCode(){
+        int hash = 7;
+        hash = 31 * hash + startPosition.hashCode();
+        hash = 31 * hash + endPosition.hashCode();
+        return hash;
+    }
     /**
      * @return ChessPosition of starting location
      */

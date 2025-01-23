@@ -13,11 +13,21 @@ public class ChessPiece {
 
 
     private final ChessPiece.PieceType type;
+    private final ChessGame.TeamColor pieceColor;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
+        this.pieceColor = pieceColor;
     }
 
+
+    public int hashCode(){
+        int hash = 7;
+        hash = 31 * hash + this.type.hashCode();
+        hash = 31 * hash + this.pieceColor.hashCode();
+        return hash;
+    }
     /**
+     *
      * The various different chess piece options
      */
     public enum PieceType {
@@ -33,7 +43,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
