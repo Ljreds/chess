@@ -72,8 +72,8 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        PieceMoveCalc moveset = new PieceMoveCalc();
-        return moveset.pieceMoves(board, myPosition);
+        PieceMoveCalc moveSet = new PieceMoveCalc(board, myPosition);
+        return moveSet.pieceMoves();
     }
 
 }

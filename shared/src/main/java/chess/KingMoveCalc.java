@@ -6,23 +6,28 @@ import java.util.Collection;
 public class KingMoveCalc extends PieceMoveCalc {
 
     private final Collection<ChessMove> moves = new ArrayList<>();
+    private int row = myPosition.getRow();
+    private int col = myPosition.getColumn();
 
-    public KingMoveCalc() {
+    public KingMoveCalc(ChessBoard board, ChessPosition myPosition) {
+        super(board, myPosition);
+        this.board = board;
+        this.myPosition = myPosition;
+        this.row = myPosition.getRow();
+        this.col = myPosition.getColumn();
     }
 
     public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
         ChessPiece myPiece = board.getPiece(myPosition);
 
-        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col), myPiece.getPieceType()));
-        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col+1), myPiece.getPieceType()));
-        moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), myPiece.getPieceType()));
-        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col+1), myPiece.getPieceType()));
-        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), myPiece.getPieceType()));
-        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col-1), myPiece.getPieceType()));
-        moves.add(new ChessMove(myPosition, new ChessPosition(row, col-1), myPiece.getPieceType()));
-        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col-1), myPiece.getPieceType()));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col), null));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col+1), null));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), null));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col+1), null));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), null));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col-1), null));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row, col-1), null));
+        moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col-1), null));
 
         return PieceMoveCalc.borderPatrol(board, pieceBlockKing(board, moves));
     }
