@@ -47,8 +47,8 @@ public class BishopMoveCalc extends PieceMoveCalc {
     public void leftUpMoves() {
         ChessPiece piece = board.getPiece(myPosition);
         for(int i = 1; i <= 8; i++) {
-            if ((i - row) > 0 && (i + col) <= 8) {
-                ChessPiece otherPiece = board.getPiece(new ChessPosition(row + i, col + i));
+            if ((row - i) > 0 && (i + col) <= 8) {
+                ChessPiece otherPiece = board.getPiece(new ChessPosition(row - i, col + i));
                 if (otherPiece == null){
                     moves.add(new ChessMove(myPosition, new ChessPosition(row - i, col + i), null));
                 }
@@ -65,8 +65,8 @@ public class BishopMoveCalc extends PieceMoveCalc {
     public void leftDownMoves() {
         ChessPiece piece = board.getPiece(myPosition);
         for(int i = 1; i <= 8; i++) {
-            if ((i - row) > 0 && (i - col) > 0) {
-                ChessPiece otherPiece = board.getPiece(new ChessPosition(row + i, col + i));
+            if ((row - i) > 0 && (col - i) > 0) {
+                ChessPiece otherPiece = board.getPiece(new ChessPosition(row - i, col - i));
                 if (otherPiece == null){
                     moves.add(new ChessMove(myPosition, new ChessPosition(row - i, col - i), null));
                 }
@@ -83,8 +83,8 @@ public class BishopMoveCalc extends PieceMoveCalc {
     public void rightDownMoves() {
         ChessPiece piece = board.getPiece(myPosition);
         for(int i = 1; i <= 8; i++) {
-            if ((i + row) <= 8 && (i - col) > 0) {
-                ChessPiece otherPiece = board.getPiece(new ChessPosition(row + i, col + i));
+            if ((i + row) <= 8 && (col - i) > 0) {
+                ChessPiece otherPiece = board.getPiece(new ChessPosition(row + i, col - i));
                 if (otherPiece == null) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(row + i, col - i), null));
                 }else if (otherPiece.getTeamColor() == piece.getTeamColor()) {
