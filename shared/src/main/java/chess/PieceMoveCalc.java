@@ -17,10 +17,15 @@ public class PieceMoveCalc {
         if(myPiece.getPieceType() == ChessPiece.PieceType.KING){
             KingMoveCalc kingMoveCalc = new KingMoveCalc(board, myPosition);
             moves = kingMoveCalc.kingMoves();
-        };
-        if(myPiece.getPieceType() == ChessPiece.PieceType.BISHOP){
+        }else if(myPiece.getPieceType() == ChessPiece.PieceType.BISHOP){
             BishopMoveCalc bishopMoveCalc = new BishopMoveCalc(board, myPosition);
             moves = bishopMoveCalc.bishopMoves();
+        }else if(myPiece.getPieceType() == ChessPiece.PieceType.ROOK){
+            RookMoveCalc rookMoveCalc = new RookMoveCalc(board, myPosition);
+            moves = rookMoveCalc.rookMoves();
+        }else if(myPiece.getPieceType() == ChessPiece.PieceType.QUEEN){
+            QueenMoveCalc queenMoveCalc = new QueenMoveCalc(board, myPosition);
+            moves = queenMoveCalc.queenMoves();
         }
 
         return moves;
