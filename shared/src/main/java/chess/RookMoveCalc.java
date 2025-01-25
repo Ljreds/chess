@@ -27,7 +27,7 @@ public class RookMoveCalc extends PieceMoveCalc {
         return moves;
     }
 
-    public void rookRight() {
+    public void rookUp() {
         for(int i = 1; i <= 8; i++) {
             if ((i + row) <= 8) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row + i, col));
@@ -44,7 +44,7 @@ public class RookMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void rookLeft() {
+    public void rookDown() {
         for(int i = 1; i <= 8; i++) {
             if ((row - i) > 0) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row - i, col));
@@ -61,7 +61,7 @@ public class RookMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void rookDown() {
+    public void rookLeft() {
         for(int i = 1; i <= 8; i++) {
             if ((col - i) > 0) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col - i));
@@ -78,7 +78,7 @@ public class RookMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void rookUp() {
+    public void rookRight() {
         for(int i = 1; i <= 8; i++) {
             if ((col + i) <= 8) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col + i));

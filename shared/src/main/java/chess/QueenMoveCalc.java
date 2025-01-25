@@ -48,7 +48,7 @@ public class QueenMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void queenLeftUp() {
+    public void queenRightDown() {
         for(int i = 1; i <= 8; i++) {
             if ((row - i) > 0 && (i + col) <= 8) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row - i, col + i));
@@ -82,7 +82,7 @@ public class QueenMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void queenRightDown() {
+    public void queenLeftUp() {
         for(int i = 1; i <= 8; i++) {
             if ((i + row) <= 8 && (col - i) > 0) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row + i, col - i));
@@ -99,7 +99,7 @@ public class QueenMoveCalc extends PieceMoveCalc {
         }
     }
 
-    public void queenRight() {
+    public void queenUp() {
         for(int i = 1; i <= 8; i++) {
             if ((i + row) <= 8) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row + i, col));
@@ -116,7 +116,7 @@ public class QueenMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void queenLeft() {
+    public void queenDown() {
         for(int i = 1; i <= 8; i++) {
             if ((row - i) > 0) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row - i, col));
@@ -133,7 +133,7 @@ public class QueenMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void queenDown() {
+    public void queenLeft() {
         for(int i = 1; i <= 8; i++) {
             if ((col - i) > 0) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col - i));
@@ -150,7 +150,7 @@ public class QueenMoveCalc extends PieceMoveCalc {
             }
         }
     }
-    public void queenUp() {
+    public void queenRight() {
         for(int i = 1; i <= 8; i++) {
             if ((col + i) <= 8) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col + i));

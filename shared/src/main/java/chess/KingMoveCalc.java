@@ -6,8 +6,8 @@ import java.util.Collection;
 public class KingMoveCalc extends PieceMoveCalc {
 
     private final Collection<ChessMove> moves = new ArrayList<>();
-    private int row = myPosition.getRow();
-    private int col = myPosition.getColumn();
+    private final int row;
+    private final int col;
     private final ChessPiece myPiece;
 
     public KingMoveCalc(ChessBoard board, ChessPosition myPosition) {
@@ -33,45 +33,13 @@ public class KingMoveCalc extends PieceMoveCalc {
 
     }
 
-    public void kingDown(){
+    public void kingLeft(){
         if ((col - 1) > 0) {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col - 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row, col - 1), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
             }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row, col - 1), null));
-
-            }
-
-        }
-
-    }
-    public void kingUp(){
-        if ((col + 1) <= 8) {
-            ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col+1));
-            if (otherPiece == null) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), null));
-
-            }
-
-        }
-
-    }
-    public void kingLeft(){
-        if ((row - 1) > 0) {
-            ChessPiece otherPiece = board.getPiece(new ChessPosition(row-1, col));
-            if (otherPiece == null) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), null));
 
             }
 
@@ -79,12 +47,36 @@ public class KingMoveCalc extends PieceMoveCalc {
 
     }
     public void kingRight(){
+        if ((col + 1) <= 8) {
+            ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col+1));
+            if (otherPiece == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), null));
+            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), null));
+
+            }
+
+        }
+
+    }
+    public void kingDown(){
+        if ((row - 1) > 0) {
+            ChessPiece otherPiece = board.getPiece(new ChessPosition(row-1, col));
+            if (otherPiece == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), null));
+            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), null));
+
+            }
+
+        }
+
+    }
+    public void kingUp(){
         if ((row + 1) <= 8) {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row +1, col));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row +1, col), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
             }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col), null));
 
@@ -98,8 +90,6 @@ public class KingMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row - 1, col - 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
             }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), null));
 
@@ -108,13 +98,11 @@ public class KingMoveCalc extends PieceMoveCalc {
         }
 
     }
-    public void kingDownRight(){
+    public void kingUpLeft(){
         if ((col - 1) > 0 && (row + 1) <= 8) {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row + 1, col - 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
             }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), null));
 
@@ -124,13 +112,11 @@ public class KingMoveCalc extends PieceMoveCalc {
 
     }
 
-    public void kingUpLeft(){
+    public void kingDownRight(){
         if ((col + 1) <= 8 && (row - 1) > 0) {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row - 1, col + 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
             }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), null));
 
@@ -144,8 +130,6 @@ public class KingMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), null));
-            }else if (otherPiece.getTeamColor() == myPiece.getTeamColor()) {
-                return;
             }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), null));
 

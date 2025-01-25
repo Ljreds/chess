@@ -26,6 +26,9 @@ public class PieceMoveCalc {
         }else if(myPiece.getPieceType() == ChessPiece.PieceType.QUEEN){
             QueenMoveCalc queenMoveCalc = new QueenMoveCalc(board, myPosition);
             moves = queenMoveCalc.queenMoves();
+        }else if(myPiece.getPieceType() == ChessPiece.PieceType.PAWN){
+            PawnMoveCalc pawnMoveCalc = new PawnMoveCalc(board, myPosition);
+            moves = pawnMoveCalc.pawnMoves();
         }
 
         return moves;
