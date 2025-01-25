@@ -29,6 +29,9 @@ public class PieceMoveCalc {
         }else if(myPiece.getPieceType() == ChessPiece.PieceType.PAWN){
             PawnMoveCalc pawnMoveCalc = new PawnMoveCalc(board, myPosition);
             moves = pawnMoveCalc.pawnMoves();
+        }else if(myPiece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+            KnightMoveCalc knightMoveCalc = new KnightMoveCalc(board, myPosition);
+            moves = knightMoveCalc.knightMoves();
         }
 
         return moves;
