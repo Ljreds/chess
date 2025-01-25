@@ -1,13 +1,9 @@
 package chess;
 
-import java.util.ArrayList;
+
 import java.util.Collection;
 
 public class PawnMoveCalc extends PieceMoveCalc {
-    private final Collection<ChessMove> moves = new ArrayList<>();
-    private final int row;
-    private final int col;
-    private final ChessPiece piece;
 
     public PawnMoveCalc(ChessBoard board, ChessPosition myPosition) {
         super(board, myPosition);

@@ -1,14 +1,11 @@
 package chess;
 
-import java.util.ArrayList;
+
+
 import java.util.Collection;
 
 public class KnightMoveCalc extends PieceMoveCalc {
 
-    private final Collection<ChessMove> moves = new ArrayList<>();
-    private final int row;
-    private final int col;
-    private final ChessPiece myPiece;
 
     public KnightMoveCalc(ChessBoard board, ChessPosition myPosition) {
         super(board, myPosition);
@@ -16,7 +13,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
         this.myPosition = myPosition;
         this.row = myPosition.getRow();
         this.col = myPosition.getColumn();
-        this.myPiece = board.getPiece(myPosition);
+        this.piece = board.getPiece(myPosition);
     }
 
     public Collection<ChessMove> knightMoves() {
@@ -25,7 +22,6 @@ public class KnightMoveCalc extends PieceMoveCalc {
         knightLeft();
         knightRight();
         return moves;
-
     }
 
     public void knightUp(){
@@ -33,7 +29,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row + 2, col - 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col - 1), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col - 1), null));
 
             }
@@ -43,7 +39,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row + 2, col + 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col + 1), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col + 1), null));
 
             }
@@ -56,7 +52,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row - 2, col - 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 2, col - 1), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 2, col - 1), null));
 
             }
@@ -66,7 +62,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row - 2, col + 1));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 2, col + 1), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 2, col + 1), null));
 
             }
@@ -79,7 +75,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row + 1, col + 2));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 2), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 2), null));
 
             }
@@ -89,7 +85,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row - 1, col + 2));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 2), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 2), null));
 
             }
@@ -102,7 +98,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row + 1, col - 2));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 2), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 2), null));
 
             }
@@ -112,7 +108,7 @@ public class KnightMoveCalc extends PieceMoveCalc {
             ChessPiece otherPiece = board.getPiece(new ChessPosition(row - 1, col  - 2));
             if (otherPiece == null) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 2), null));
-            }else if(otherPiece.getTeamColor() != myPiece.getTeamColor()) {
+            }else if(otherPiece.getTeamColor() != piece.getTeamColor()) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col  - 2), null));
 
             }
