@@ -3,6 +3,9 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -51,38 +54,25 @@ public class ChessBoard {
                 squares[row][column] = null;
             }
         }
-        whiteReset();
-        blackReset();
+        pieceReset(0, 1, WHITE);
+        pieceReset(7, 6, BLACK);
     }
 
-    public void whiteReset(){
+    public void pieceReset(int pos, int pawnPos, ChessGame.TeamColor color){
         for(int col = 0; col < 8; col++){
-            squares[1][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            squares[pawnPos][col] = new ChessPiece(color, ChessPiece.PieceType.PAWN);
         }
-        squares[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-        squares[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        squares[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        squares[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-        squares[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-        squares[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        squares[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        squares[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        squares[pos][0] = new ChessPiece(color, ChessPiece.PieceType.ROOK);
+        squares[pos][1] = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
+        squares[pos][2] = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
+        squares[pos][3] = new ChessPiece(color, ChessPiece.PieceType.QUEEN);
+        squares[pos][4] = new ChessPiece(color, ChessPiece.PieceType.KING);
+        squares[pos][5] = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
+        squares[pos][6] = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
+        squares[pos][7] = new ChessPiece(color, ChessPiece.PieceType.ROOK);
 
     }
 
-    public void blackReset(){
-        for(int col = 0; col < 8; col++){
-            squares[6][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-        }
-        squares[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        squares[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        squares[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        squares[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        squares[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        squares[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        squares[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        squares[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-    }
 
     @Override
     public boolean equals(Object o) {
