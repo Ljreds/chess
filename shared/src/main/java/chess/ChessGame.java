@@ -55,10 +55,8 @@ public class ChessGame {
         ChessPiece piece = gameBoard.getPiece(startPosition);
         if(piece != null) {
             Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
-            if(isInCheck(piece.getTeamColor())){
-                return moveThroughCheck(moves);
-            }
-            return moves;
+            return moveThroughCheck(moves);
+
         }
        return null;
     }
@@ -69,15 +67,15 @@ public class ChessGame {
             ChessBoard board = gameBoard.clone();
             ChessGame virtualChess = new ChessGame();
             virtualChess.setBoard(board);
+
             ChessPiece piece = board.getPiece(move.getStartPosition());
             board.setPiece(move, board.getPiece(move.getStartPosition()));
-            ChessMove moveBack = new ChessMove(move.getEndPosition(), move.getStartPosition(), move.getPromotionPiece());
-
 
             if(!virtualChess.isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
+            }else if(virtualChess.isInCheck(piece.getTeamColor())) {
+
             }
-            board.setPiece(moveBack, board.getPiece(move.getEndPosition()));
         }
         return validMoves;
     }
@@ -90,7 +88,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
