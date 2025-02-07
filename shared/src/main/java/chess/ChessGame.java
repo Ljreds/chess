@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -53,10 +54,11 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = gameBoard.getPiece(startPosition);
         if(piece != null) {
+            Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
             if(isInCheck(piece.getTeamColor())){
 
             }
-            return piece.pieceMoves(gameBoard, startPosition);
+            return moves;
         }
        return null;
     }
