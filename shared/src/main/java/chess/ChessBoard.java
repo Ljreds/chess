@@ -13,7 +13,7 @@ import static chess.ChessGame.TeamColor.WHITE;
  * signature of the existing methods.
  */
 public class ChessBoard implements Cloneable {
-    private final ChessPiece[][] squares;
+    private ChessPiece[][] squares;
     public ChessBoard() {
         this.squares = new ChessPiece[8][8];
     }
@@ -43,7 +43,7 @@ public class ChessBoard implements Cloneable {
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow()-1][position.getColumn()-1];
     }
-
+    
     public void setPiece(ChessMove move, ChessPiece piece) {
         ChessPosition endPosition = move.getEndPosition();
         ChessPosition startPosition = move.getStartPosition();
@@ -94,14 +94,16 @@ public class ChessBoard implements Cloneable {
     public ChessBoard clone() {
         try {
             ChessBoard clone = (ChessBoard) super.clone();
+            ChessPiece[][]cloneSquares = new ChessPiece[8][8];
             for(int row = 0; row < 8; row++) {
                 for(int column = 0; column < 8; column++) {
                     if(squares[row][column] != null) {
-                       clone.addPiece(new ChessPosition(row, column), squares[row][column].clone());
+                       cloneSquares[row][column] = getPiece(new ChessPosition(row, column)).clone();
                     }
-
+                    
                 }
             }
+            clone.squares = cloneSquares;
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

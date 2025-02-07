@@ -56,23 +56,30 @@ public class ChessGame {
         if(piece != null) {
             Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
             if(isInCheck(piece.getTeamColor())){
-                return moveThroughCheck(moves, gameBoard.clone());
+                return moveThroughCheck(moves);
             }
             return moves;
         }
        return null;
     }
 
-    public Collection<ChessMove> moveThroughCheck(Collection<ChessMove> moves, ChessBoard board) {
+    public Collection<ChessMove> moveThroughCheck(Collection<ChessMove> moves) {
+        Collection<ChessMove> validMoves = new ArrayList<>();
         for(ChessMove move : moves) {
+            ChessBoard board = gameBoard.clone();
+            ChessGame virtualChess = new ChessGame();
+            virtualChess.setBoard(board);
+            ChessPiece piece = board.getPiece(move.getStartPosition());
             board.setPiece(move, board.getPiece(move.getStartPosition()));
             ChessMove moveBack = new ChessMove(move.getEndPosition(), move.getStartPosition(), move.getPromotionPiece());
-            if(isInCheck(teamTurn)){
-                moves.remove(move);
+
+
+            if(!virtualChess.isInCheck(piece.getTeamColor())) {
+                validMoves.add(move);
             }
             board.setPiece(moveBack, board.getPiece(move.getEndPosition()));
         }
-        return moves;
+        return validMoves;
     }
 
 
