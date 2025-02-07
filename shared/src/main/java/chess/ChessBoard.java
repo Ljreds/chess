@@ -98,7 +98,7 @@ public class ChessBoard implements Cloneable {
             for(int row = 0; row < 8; row++) {
                 for(int column = 0; column < 8; column++) {
                     if(squares[row][column] != null) {
-                       cloneSquares[row][column] = getPiece(new ChessPosition(row, column)).clone();
+                       cloneSquares[row][column] = squares[row][column].clone();
                     }
                     
                 }
