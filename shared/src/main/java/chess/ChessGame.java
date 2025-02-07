@@ -56,12 +56,25 @@ public class ChessGame {
         if(piece != null) {
             Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
             if(isInCheck(piece.getTeamColor())){
-
+                return moveThroughCheck(moves, gameBoard.clone());
             }
             return moves;
         }
        return null;
     }
+
+    public Collection<ChessMove> moveThroughCheck(Collection<ChessMove> moves, ChessBoard board) {
+        for(ChessMove move : moves) {
+            board.setPiece(move, board.getPiece(move.getStartPosition()));
+            ChessMove moveBack = new ChessMove(move.getEndPosition(), move.getStartPosition(), move.getPromotionPiece());
+            if(isInCheck(teamTurn)){
+                moves.remove(move);
+            }
+            board.setPiece(moveBack, board.getPiece(move.getEndPosition()));
+        }
+        return moves;
+    }
+
 
     /**
      * Makes a move in a chess game

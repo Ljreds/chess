@@ -12,7 +12,7 @@ import static chess.ChessGame.TeamColor.WHITE;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
     private final ChessPiece[][] squares;
     public ChessBoard() {
         this.squares = new ChessPiece[8][8];
@@ -42,6 +42,13 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow()-1][position.getColumn()-1];
+    }
+
+    public void setPiece(ChessMove move, ChessPiece piece) {
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPosition startPosition = move.getStartPosition();
+        squares[endPosition.getRow()-1][endPosition.getColumn()-1] = piece;
+        squares[startPosition.getRow()-1][startPosition.getColumn()-1] = null;
     }
 
     /**
@@ -81,5 +88,23 @@ public class ChessBoard {
         }
         ChessBoard that = (ChessBoard) o;
         return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+            for(int row = 0; row < 8; row++) {
+                for(int column = 0; column < 8; column++) {
+                    if(squares[row][column] != null) {
+                       clone.addPiece(new ChessPosition(row, column), squares[row][column].clone());
+                    }
+
+                }
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
