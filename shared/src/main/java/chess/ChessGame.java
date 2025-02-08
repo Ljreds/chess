@@ -45,6 +45,14 @@ public class ChessGame {
         BLACK
     }
 
+    public TeamColor switchTurn(TeamColor currentTurn) {
+        if(currentTurn == TeamColor.WHITE) {
+            return TeamColor.BLACK;
+        }else{
+            return TeamColor.WHITE;
+        }
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -90,19 +98,41 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         ChessPiece movePiece = gameBoard.getPiece(move.getStartPosition());
-        if(isInCheckmate(movePiece.getTeamColor()) || isInStalemate(movePiece.getTeamColor())) {
-            throw new InvalidMoveException();
-        }else{
-            for(ChessMove validMove : validMoves) {
-                if(move == validMove) {
-                    gameBoard.setPiece(move, movePiece);
-                    setTeamTurn(movePiece.getTeamColor());
-                }else {
-                    throw new InvalidMoveException();
-                }
+        if(movePiece != null) {
+            if (!isInCheckmate(movePiece.getTeamColor()) && !isInStalemate(movePiece.getTeamColor())) {
+                for (ChessMove validMove : validMoves) {
+                    if (move.equals(validMove) && movePiece.getTeamColor() == teamTurn) {
+                        if(movePiece.getPieceType() == ChessPiece.PieceType.PAWN){
+                            if(pawnPromotes(move)) {
+                                ChessPiece promoPiece = new ChessPiece(movePiece.getTeamColor(), move.getPromotionPiece());
+                                gameBoard.setPiece(move, promoPiece);
+                            }else{
+                                gameBoard.setPiece(move, movePiece);
+                            }
+                        }else {
+                            gameBoard.setPiece(move, movePiece);
+                        }
+                        TeamColor color = switchTurn(movePiece.getTeamColor());
+                        setTeamTurn(color);
+                        return;
+                    }
 
+                }
             }
         }
+        throw new InvalidMoveException();
+    }
+
+    public boolean pawnPromotes(ChessMove move){
+        ChessPiece pawn = gameBoard.getPiece(move.getStartPosition());
+        if(pawn != null) {
+            if(pawn.getTeamColor() == TeamColor.WHITE) {
+                return move.getEndPosition().getRow() == 8;
+            }else{
+                return move.getEndPosition().getRow() == 1;
+            }
+        }
+        return false;
     }
 
     /**
