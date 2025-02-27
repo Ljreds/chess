@@ -54,7 +54,7 @@ public class UserService {
             authDao.deleteAuth(auth);
             return new LogoutResult();
         }
-
+        return null;
     }
 
 }
