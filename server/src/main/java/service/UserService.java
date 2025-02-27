@@ -2,6 +2,8 @@ package service;
 
 import dataaccess.AuthDao;
 import dataaccess.UserDao;
+import model.AuthData;
+import model.UserData;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
@@ -25,15 +27,34 @@ public class UserService {
         if(userDao.getUser(user) == null){
             userDao.createUser(user, password, email);
             authDao.createAuth(user);
-        }else{
 
+            AuthData auth = authDao.getAuth(user);
+            return new RegisterResult(user, auth.authToken());
+        }else{
+            return null;
         }
     }
     public LoginResult login(LoginRequest loginRequest){
-        return null;
+        String user = loginRequest.username();
+        String password = loginRequest.password();
+        UserData userData = userDao.getUser(user);
+        if(userData != null){
+            if(userData.password().equals(password)) {
+                authDao.createAuth(user);
+            }
+            AuthData auth = authDao.getAuth(user);
+            return new LoginResult(user, auth.authToken());
+        }else{
+            return null;
+        }
     }
     public LogoutResult register(LogoutRequest logoutRequest){
-        return null;
+        String auth = logoutRequest.authToken();
+        if(authDao.getAuth(auth) != null){
+            authDao.deleteAuth(auth);
+            return new LogoutResult();
+        }
+
     }
 
 }
