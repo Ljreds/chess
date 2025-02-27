@@ -4,12 +4,12 @@ import chess.ChessGame;
 import model.GameData;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDao{
 
-    private Map<Integer, GameData> gameMemory;
+    private final Map<Integer, GameData> gameMemory = new HashMap<>();
 
     @Override
     public void createGame(int GameID, String whiteUsername, String blackUsername, String gameName, ChessGame chessGame) {
@@ -51,6 +51,6 @@ public class MemoryGameDAO implements GameDao{
 
     @Override
     public void clear() {
-
+        gameMemory.clear();
     }
 }
