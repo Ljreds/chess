@@ -10,6 +10,7 @@ import java.util.Map;
 public class MemoryGameDAO implements GameDao{
 
     private final Map<Integer, GameData> gameMemory = new HashMap<>();
+    private static MemoryGameDAO instance;
 
     @Override
     public void createGame(int GameID, String whiteUsername, String blackUsername, String gameName, ChessGame chessGame) {
@@ -52,5 +53,13 @@ public class MemoryGameDAO implements GameDao{
     @Override
     public void clear() {
         gameMemory.clear();
+    }
+
+    public static synchronized MemoryGameDAO getInstance(){
+        if(instance == null){
+            instance = new MemoryGameDAO();
+        }
+
+        return instance;
     }
 }

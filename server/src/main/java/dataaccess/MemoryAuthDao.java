@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public class MemoryAuthDao implements AuthDao {
     private final Map<String, AuthData> authMemory = new HashMap<>();
+    private static MemoryAuthDao instance;
+
 
     @Override
     public void createAuth(String username) {
@@ -29,5 +31,13 @@ public class MemoryAuthDao implements AuthDao {
     @Override
     public void clear() {
         authMemory.clear();
+    }
+
+    public static synchronized MemoryAuthDao getInstance(){
+        if(instance == null){
+            instance = new MemoryAuthDao();
+        }
+
+        return instance;
     }
 }
