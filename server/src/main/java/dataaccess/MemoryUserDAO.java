@@ -1,6 +1,6 @@
 package dataaccess;
 
-import handler.RegisterHandler;
+
 import model.UserData;
 
 import java.util.HashMap;

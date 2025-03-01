@@ -15,7 +15,7 @@ public class UserService {
         this.userDao = userDao;
         this.authDao = authDao;
     }
-    public RegisterResult register(RegisterRequest registerRequest) throws Exception {
+    public RegisterResult register(RegisterRequest registerRequest) {
         String user = registerRequest.username();
         String password = registerRequest.password();
         String email = registerRequest.email();
@@ -36,14 +36,20 @@ public class UserService {
         String user = loginRequest.username();
         String password = loginRequest.password();
         UserData userData = userDao.getUser(user);
-        if(userData != null){
+        if(user.isEmpty()||password.isEmpty()){
+            throw new RequestException("Error: bad request");
+        }
+        else if(userData != null){
             if(userData.password().equals(password)) {
                 authDao.createAuth(user);
+            }else{
+                throw new UnauthorizedException("Error: unauthorized");
             }
             AuthData auth = authDao.getAuth(user);
             return new LoginResult(user, auth.authToken());
+
         }else{
-            return null;
+            throw new UnauthorizedException("Error: Unauthorized");
         }
     }
     public LogoutResult register(LogoutRequest logoutRequest){

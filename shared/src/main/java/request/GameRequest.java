@@ -2,5 +2,5 @@ package request;
 
 public record GameRequest(
         String authToken,
-        String gameName){
+        String gameName) implements CRequest {
 }
