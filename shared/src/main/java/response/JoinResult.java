@@ -1,4 +1,4 @@
 package response;
 
-public record JoinResult() implements CResult{
+public record JoinResult(){
 }

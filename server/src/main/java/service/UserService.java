@@ -2,14 +2,9 @@ package service;
 
 import dataaccess.AuthDao;
 import dataaccess.UserDao;
-import model.AuthData;
-import model.UserData;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
-import response.LoginResult;
-import response.RegisterResult;
-import response.LogoutResult;
+import model.*;
+import request.*;
+import response.*;
 
 public class UserService {
 
@@ -20,18 +15,21 @@ public class UserService {
         this.userDao = userDao;
         this.authDao = authDao;
     }
-    public RegisterResult register(RegisterRequest registerRequest){
+    public RegisterResult register(RegisterRequest registerRequest) throws Exception {
         String user = registerRequest.username();
         String password = registerRequest.password();
         String email = registerRequest.email();
-        if(userDao.getUser(user) == null){
+        if(user.isEmpty() ||password.isEmpty()||email.isEmpty()){
+            throw new RequestException("Error: bad request");
+
+        }else if(userDao.getUser(user) == null){
             userDao.createUser(user, password, email);
             authDao.createAuth(user);
 
             AuthData auth = authDao.getAuth(user);
             return new RegisterResult(user, auth.authToken());
         }else{
-            return null;
+            throw new TakenException("Error: already taken");
         }
     }
     public LoginResult login(LoginRequest loginRequest){

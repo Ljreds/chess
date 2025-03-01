@@ -10,7 +10,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        Spark.post("/user", (req, res) -> (new RegisterHandler()).handle(req, res));
+        Spark.post("/user", (req, res) -> (new RegisterHandler()).RegisterHandle(req, res));
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();

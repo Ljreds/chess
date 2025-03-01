@@ -2,47 +2,45 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.*;
-import dataaccess.UserDao;
-import org.eclipse.jetty.server.Authentication;
 import request.*;
 import response.RegisterResult;
-import service.UserService;
+import service.*;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 
-public class RegisterHandler implements Route {
+public class RegisterHandler extends Handler{
 
     private static RegisterHandler instance;
-    private final Gson gson = new Gson();
-    private final MemoryAuthDao authMemory;
-    private final MemoryUserDAO userMemory;
 
     public  RegisterHandler(){
         this.authMemory = MemoryAuthDao.getInstance();
         this.userMemory = MemoryUserDAO.getInstance();
+        this.gson = new Gson();
     }
 
 
 
-    @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object RegisterHandle(Request request, Response response) throws Exception {
        RegisterRequest regBody = getBody(request, RegisterRequest.class);
        UserService service = new UserService(userMemory, authMemory);
-       RegisterResult result = service.register(regBody);
+       try {
+           RegisterResult result = service.register(regBody);
 
-       response.type("application/json");
-       response.status(200);
-       return gson.toJson(result);
+           response.type("application/json");
+           response.status(200);
+           return gson.toJson(result);
+       }catch(TakenException ex){
+           response.type("application/json");
+           response.status(403);
+           return gson.toJson(ex.getMessage());
+       }catch(RequestException ex){
+           response.type("application/json");
+           response.status(400);
+           return gson.toJson(ex.getMessage());
+       }
+
     }
 
-    public RegisterRequest getBody(Request request, Class<RegisterRequest> regClass){
-        RegisterRequest body = gson.fromJson(request.body(), regClass);
-        if(body == null){
-            throw new RuntimeException("Error: bad request");
-        }
-        return body;
-    }
 
     public static synchronized RegisterHandler getInstance(){
         if(instance == null){
