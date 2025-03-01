@@ -2,5 +2,5 @@ package response;
 
 public record LoginResult(
         String username,
-        String authToken) {
+        String authToken) implements CResult {
 }

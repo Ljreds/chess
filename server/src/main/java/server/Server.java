@@ -1,5 +1,6 @@
 package server;
 
+import handler.RegisterHandler;
 import spark.*;
 
 public class Server {
@@ -9,7 +10,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        Spark.post("/user", )
+        Spark.post("/user", (req, res) -> (new RegisterHandler()).handle(req, res));
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -22,8 +23,4 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
-}
-
-class RegisterHandler implements Route {
-
 }
