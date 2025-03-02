@@ -6,6 +6,8 @@ import model.GameData;
 import request.*;
 import response.*;
 
+import java.util.Objects;
+
 
 public class GameService {
     private final UserDao userDao;
@@ -33,6 +35,7 @@ public class GameService {
         }
 
     }
+
     public ListResult listGame(ListRequest listRequest) throws DataAccessException {
         String auth = listRequest.authToken();
         AuthData authData = authDao.getAuthByToken(auth);
@@ -42,5 +45,26 @@ public class GameService {
             throw new UnauthorizedException("Error: unauthorized");
         }
 
+    }
+
+    public JoinResult joinGame(JoinRequest joinRequest) throws DataAccessException {
+        String auth = joinRequest.authToken();
+        int gameID = joinRequest.gameID();
+        String playerColor = joinRequest.playerColor();
+        AuthData authData = authDao.getAuthByToken(auth);
+        if(authData != null){
+            GameData gameData = gameDao.getGame(gameID);
+            if(Objects.equals(playerColor, "White")){
+                gameData.updateWhiteUser(authData.username());
+                return new JoinResult();
+            }else if(Objects.equals(playerColor, "Black")){
+                gameData.updateBlackUser(authData.username());
+                return new JoinResult();
+            }else{
+                throw new RequestException("Error: bad request");
+            }
+        }else{
+            throw new UnauthorizedException("Error: Unauthorized");
+        }
     }
 }
