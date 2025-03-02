@@ -2,14 +2,50 @@ package model;
 
 import chess.ChessGame;
 
-public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
-    public GameData updateGame(ChessGame game) {
-        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+import java.util.Random;
+
+public class GameData {
+
+    private final int gameID;
+    private final String gameName;
+    private String whiteUsername;
+    private String blackUsername;
+    private final ChessGame chessGame;
+
+
+
+    public GameData(String gameName) {
+        Random random = new Random();
+        this.gameName = gameName;
+        this.chessGame = new ChessGame();
+        this.gameID = 100000 + random.nextInt(900000);
+        this.whiteUsername = null;
+        this.blackUsername = null;
+
     }
-    public GameData updateWhiteUser(String newWUsername) {
-        return new GameData(gameID, newWUsername, blackUsername, gameName, game);
+//    public GameData updateGame (ChessGame game){
+//
+//    }
+    public String getName() {
+        return gameName;
     }
-    public GameData updateBlackUser(String newBUsername) {
-        return new GameData(gameID, whiteUsername, newBUsername, gameName, game);
+
+    public String getBlackUsername() {
+        return blackUsername;
+    }
+
+    public String getWhiteUsername() {
+        return whiteUsername;
+    }
+
+    public int getGameID() {
+        return gameID;
+    }
+
+    public void updateWhiteUser (String newWUsername){
+        whiteUsername = newWUsername;
+    }
+    public void updateBlackUser (String newBUsername){
+        blackUsername = newBUsername;
     }
 }

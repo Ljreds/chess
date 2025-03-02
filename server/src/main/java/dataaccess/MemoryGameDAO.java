@@ -3,9 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MemoryGameDAO implements GameDao{
 
@@ -13,9 +11,11 @@ public class MemoryGameDAO implements GameDao{
     private static MemoryGameDAO instance;
 
     @Override
-    public void createGame(int GameID, String whiteUsername, String blackUsername, String gameName, ChessGame chessGame) {
-        GameData gameData = new GameData(GameID, whiteUsername, blackUsername, gameName, chessGame);
-        gameMemory.put(GameID, gameData);
+    public void createGame(String gameName) {
+
+        GameData gameData = new GameData(gameName);
+        int gameID = gameData.getGameID();
+        gameMemory.put(gameID, gameData);
     }
 
     @Override
@@ -24,30 +24,38 @@ public class MemoryGameDAO implements GameDao{
     }
 
     @Override
-    public Collection<GameData> getAllGames() {
+    public GameData getGameByName(String name) {
+        for(GameData game : gameMemory.values()){
+            if(Objects.equals(game.getName(), name)){
+                return gameMemory.get(game.getGameID());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Collection<GameData> listGames() {
         return gameMemory.values();
     }
 
     @Override
     public void UpdateGame(int GameID, ChessGame game) {
-        GameData gameData = gameMemory.get(GameID);
-        GameData newgameData = gameData.updateGame(game);
-        gameMemory.put(GameID, newgameData);
+//        GameData gameData = gameMemory.get(GameID);
+//        GameData newgameData = gameData.updateGame(game);
+//        gameMemory.put(GameID, newgameData);
 
     }
 
     @Override
     public void UpdateBlackUser(int GameID, String blackUsername) {
         GameData gameData = gameMemory.get(GameID);
-        GameData newgameData = gameData.updateBlackUser(blackUsername);
-        gameMemory.put(GameID, newgameData);
+        gameData.updateBlackUser(blackUsername);
     }
 
     @Override
     public void UpdateWhiteUser(int GameID, String whiteUsername) {
         GameData gameData = gameMemory.get(GameID);
-        GameData newgameData = gameData.updateWhiteUser(whiteUsername);
-        gameMemory.put(GameID, newgameData);
+        gameData.updateWhiteUser(whiteUsername);
     }
 
     @Override

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import request.*;
 import response.*;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTests {
@@ -97,6 +99,38 @@ public class ServiceTests {
 
 
         Exception ex = assertThrows(Exception.class, () -> userService.login(request));
+
+        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+
+
+
+
+    }
+
+    @Test
+    public void LogoutSuccess() throws DataAccessException {
+        UserService userService = new UserService(UserDB, AuthDB);
+        RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+
+        userService.register(request);
+        AuthData auth = AuthDB.getAuth("ljreds");
+        LogoutRequest outRequest = new LogoutRequest(auth.authToken());
+
+        LogoutResult logoutResult = userService.logout(outRequest);
+
+        Assertions.assertEquals(new LogoutResult("Thank You"), logoutResult);
+
+    }
+
+    @Test
+    public void LogoutUnauthorized(){
+        UserService userService = new UserService(UserDB, AuthDB);
+
+
+        LogoutRequest outRequest = new LogoutRequest(UUID.randomUUID().toString());
+
+
+        Exception ex = assertThrows(Exception.class, () -> userService.logout(outRequest));
 
         Assertions.assertEquals("Error: unauthorized", ex.getMessage());
 

@@ -4,6 +4,7 @@ import model.AuthData;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class MemoryAuthDao implements AuthDao {
@@ -24,8 +25,22 @@ public class MemoryAuthDao implements AuthDao {
     }
 
     @Override
-    public void deleteAuth(String username) {
-        authMemory.remove(username);
+    public AuthData getAuthByToken(String authToken) throws DataAccessException {
+        for(AuthData auth : authMemory.values()){
+            if(Objects.equals(auth.authToken(), authToken)){
+                return auth;
+            }
+        }
+        throw new DataAccessException("Error: invalid data");
+    }
+
+    @Override
+    public void deleteAuth(String authToken) {
+        for(AuthData auth : authMemory.values()){
+            if(Objects.equals(auth.authToken(), authToken)){
+                authMemory.remove(auth.username());
+            }
+        }
     }
 
     @Override

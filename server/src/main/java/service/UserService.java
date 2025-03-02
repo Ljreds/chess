@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDao;
+import dataaccess.DataAccessException;
 import dataaccess.UserDao;
 import model.*;
 import request.*;
@@ -52,13 +53,15 @@ public class UserService {
             throw new UnauthorizedException("Error: Unauthorized");
         }
     }
-    public LogoutResult register(LogoutRequest logoutRequest){
+
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
         String auth = logoutRequest.authToken();
-        if(authDao.getAuth(auth) != null){
+        if(authDao.getAuthByToken(auth) != null){
             authDao.deleteAuth(auth);
-            return new LogoutResult();
+            return new LogoutResult("Thank You");
+        }else{
+            throw new UnauthorizedException("Error: unauthorized");
         }
-        return null;
     }
 
 }

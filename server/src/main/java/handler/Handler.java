@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryUserDAO;
+import request.LogoutRequest;
 import service.UserService;
 import spark.Request;
 
@@ -25,5 +26,9 @@ public class Handler<T> {
             throw new RuntimeException("Error: bad request");
         }
         return body;
+    }
+
+    public String getAuth(Request request){
+        return request.headers("Authorization");
     }
 }

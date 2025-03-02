@@ -1,19 +1,21 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryUserDAO;
-import request.LoginRequest;
-import response.LoginResult;
-import service.*;
+import request.LogoutRequest;
+import response.LogoutResult;
+import service.UnauthorizedException;
+import service.UserService;
 import spark.Request;
 import spark.Response;
 
-public class LoginHandler extends Handler<LoginRequest>{
+public class LogoutHandler extends Handler<LogoutRequest>{
 
-    private static LoginHandler instance;
+    private static LogoutHandler instance;
 
-    public LoginHandler(){
+    public LogoutHandler(){
         this.authMemory = MemoryAuthDao.getInstance();
         this.userMemory = MemoryUserDAO.getInstance();
         this.gson = new Gson();
@@ -22,30 +24,31 @@ public class LoginHandler extends Handler<LoginRequest>{
 
 
 
-    public Object LoginHandle(Request request, Response response) {
-       LoginRequest body = getBody(request, LoginRequest.class);
+    public Object LogoutHandle(Request request, Response response) {
+       String auth = getAuth(request);
+       LogoutRequest logoutRequest = new LogoutRequest(auth);
        try {
-           LoginResult result = service.login(body);
+           LogoutResult result = service.logout(logoutRequest);
 
            response.type("application/json");
            response.status(200);
            return gson.toJson(result);
+       }catch(DataAccessException ex){
+           response.type("application/json");
+           response.status(500);
+           return gson.toJson(ex.getMessage());
        }catch(UnauthorizedException ex){
            response.type("application/json");
            response.status(401);
-           return gson.toJson(ex.getMessage());
-       }catch(RequestException ex){
-           response.type("application/json");
-           response.status(400);
            return gson.toJson(ex.getMessage());
        }
 
     }
 
 
-    public static synchronized LoginHandler getInstance(){
+    public static synchronized LogoutHandler getInstance(){
         if(instance == null){
-            instance = new LoginHandler();
+            instance = new LogoutHandler();
         }
 
         return instance;
