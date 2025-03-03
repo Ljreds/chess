@@ -5,7 +5,6 @@ import model.AuthData;
 import model.GameData;
 import request.*;
 import response.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -19,9 +18,12 @@ public class GameService {
         this.gameDao = gameDao;
     }
 
-    public GameResult createGame(GameRequest gameRequest, String authToken) throws UnauthorizedException {
+    public GameResult createGame(GameRequest gameRequest, String authToken){
         String name = gameRequest.gameName();
-        authDao.getAuthByToken(authToken);
+        AuthData auth = authDao.getAuth(authToken);
+        if(auth == null){
+            throw new UnauthorizedException("Error: unauthorized");
+        }
         if(name.isEmpty()){
             throw new RequestException("Error: bad request");
         }
@@ -30,17 +32,23 @@ public class GameService {
 
     }
 
-    public ListResult listGame(String authToken) throws UnauthorizedException {
-        authDao.getAuthByToken(authToken);
+    public ListResult listGame(String authToken) {
+        AuthData auth = authDao.getAuth(authToken);
+        if(auth == null){
+            throw new UnauthorizedException("Error: unauthorized");
+        }
         Collection<GameData> list = gameDao.listGames();
         return new ListResult(list);
 
     }
 
-    public JoinResult joinGame(JoinRequest joinRequest, String authToken) throws UnauthorizedException {
+    public JoinResult joinGame(JoinRequest joinRequest, String authToken) {
         int gameID = joinRequest.gameID();
         String playerColor = joinRequest.playerColor();
-        AuthData auth = authDao.getAuthByToken(authToken);
+        AuthData auth = authDao.getAuth(authToken);
+        if(auth == null){
+            throw new UnauthorizedException("Error: unauthorized");
+        }
         GameData gameData = gameDao.getGame(gameID);
         if(gameData == null){
             throw new RequestException("Error: bad request");

@@ -5,12 +5,8 @@ import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import request.ClearRequest;
-import request.GameRequest;
 import response.ClearResult;
-import response.GameResult;
 import service.ClearService;
-import service.RequestException;
-import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 

@@ -3,11 +3,11 @@ package service;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
 import response.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
@@ -15,14 +15,27 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTests {
-    private final MemoryAuthDao AuthDB = new MemoryAuthDao();
-    private final MemoryUserDAO UserDB = new MemoryUserDAO();
-    private final MemoryGameDAO GameDB = new MemoryGameDAO();
+
+    private static final MemoryAuthDao AuthDB = new MemoryAuthDao();
+    private static final MemoryUserDAO UserDB = new MemoryUserDAO();
+    private static final MemoryGameDAO GameDB = new MemoryGameDAO();;
+    private static UserService userService;
+    private static GameService gameService;
+
+
+    @BeforeEach
+    public void setup() {
+        AuthDB.clear();
+        UserDB.clear();
+        GameDB.clear();
+        userService = new UserService(UserDB, AuthDB);
+        gameService = new GameService(AuthDB, GameDB);
+    }
+
 
 
     @Test
     public void RegisterSuccess(){
-        UserService userService = new UserService(UserDB, AuthDB);
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult registerResult = userService.register(request);
@@ -37,7 +50,6 @@ public class ServiceTests {
     @Test
     public void RegisterNameTaken(){
         UserDB.createUser("ljreds", "12345", "kall@gmail.com");
-        UserService userService = new UserService(UserDB, AuthDB);
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
 
@@ -51,9 +63,7 @@ public class ServiceTests {
     }
     @Test
     public void RegisterBadRequest(){
-        UserDB.createUser("ljreds", "12345", "kall@gmail.com");
-        UserService userService = new UserService(UserDB, AuthDB);
-        RegisterRequest request = new RegisterRequest("ljreds", "", "JollyGoodFellow@gmail.com");
+        RegisterRequest request = new RegisterRequest("ljreds", null, "JollyGoodFellow@gmail.com");
 
 
         Exception ex = assertThrows(Exception.class, () -> userService.register(request));
@@ -68,7 +78,6 @@ public class ServiceTests {
     @Test
     public void LoginSuccess(){
         UserDB.createUser("ljreds", "12345", "kall@gmail.com");
-        UserService userService = new UserService(UserDB, AuthDB);
         LoginRequest request = new LoginRequest("ljreds", "12345");
 
         LoginResult loginResult = userService.login(request);
@@ -83,7 +92,6 @@ public class ServiceTests {
     @Test
     public void LoginBadRequest(){
         UserDB.createUser("ljreds", "12345", "kall@gmail.com");
-        UserService userService = new UserService(UserDB, AuthDB);
         LoginRequest request = new LoginRequest("", "12345");
 
 
@@ -99,7 +107,6 @@ public class ServiceTests {
     @Test
     public void LoginUnauthorized(){
         UserDB.createUser("ljreds", "12345", "kall@gmail.com");
-        UserService userService = new UserService(UserDB, AuthDB);
         LoginRequest request = new LoginRequest("ljreds", "joey221");
 
 
@@ -114,23 +121,19 @@ public class ServiceTests {
 
     @Test
     public void LogoutSuccess(){
-        UserService userService = new UserService(UserDB, AuthDB);
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
-        userService.register(request);
-        AuthData auth = AuthDB.getAuth("ljreds");
-        LogoutRequest outRequest = new LogoutRequest(auth.authToken());
+        RegisterResult result = userService.register(request);
+        LogoutRequest outRequest = new LogoutRequest(result.authToken());
 
         LogoutResult logoutResult = userService.logout(outRequest);
 
-        Assertions.assertEquals(new LogoutResult("Thank You"), logoutResult);
+        Assertions.assertEquals(new LogoutResult(""), logoutResult);
 
     }
 
     @Test
     public void LogoutUnauthorized(){
-        UserService userService = new UserService(UserDB, AuthDB);
-
 
         LogoutRequest outRequest = new LogoutRequest(UUID.randomUUID().toString());
 
@@ -146,15 +149,12 @@ public class ServiceTests {
 
     @Test
     public void createGameSuccess(){
-        UserService userService = new UserService(UserDB, AuthDB);
-        GameService gameService = new GameService(AuthDB, GameDB);
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
-        userService.register(request);
-        AuthData auth = AuthDB.getAuth("ljreds");
+        RegisterResult result = userService.register(request);
         GameRequest outRequest = new GameRequest("newGame");
 
-        GameResult gameResult = gameService.createGame(outRequest, auth.authToken());
+        GameResult gameResult = gameService.createGame(outRequest, result.authToken());
         int gameID = gameResult.gameID();
         Map<Integer,GameData> map = GameDB.getGameMemory();
 
@@ -164,8 +164,6 @@ public class ServiceTests {
 
     @Test
     public void createGameUnauthorized(){
-        GameService gameService = new GameService(AuthDB, GameDB);
-
         GameRequest outRequest = new GameRequest("newGame");
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, UUID.randomUUID().toString()));
@@ -175,8 +173,6 @@ public class ServiceTests {
 
     @Test
     public void createGameBadRequest(){
-        UserService userService = new UserService(UserDB, AuthDB);
-        GameService gameService = new GameService(AuthDB, GameDB);
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         userService.register(request);
@@ -190,15 +186,12 @@ public class ServiceTests {
 
     @Test
     public void listGameSuccess(){
-        UserService userService = new UserService(UserDB, AuthDB);
-        GameService gameService = new GameService(AuthDB, GameDB);
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
-        userService.register(request);
-        AuthData auth = AuthDB.getAuth("ljreds");
+        RegisterResult result = userService.register(request);
 
         Collection<GameData> list = GameDB.listGames();
-        ListResult listResult = gameService.listGame(auth.authToken());
+        ListResult listResult = gameService.listGame(result.authToken());
 
 
         Assertions.assertEquals(new ListResult(list), listResult);
@@ -209,11 +202,57 @@ public class ServiceTests {
 
     @Test
     public void listGameUnauthorized(){
-        GameService gameService = new GameService(AuthDB, GameDB);
-
         Exception ex = assertThrows(Exception.class, () -> gameService.listGame(UUID.randomUUID().toString()));
 
         Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+    }
+
+    @Test
+    public void joinGameSuccess(){
+        RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+        RegisterResult regResult = userService.register(regRequest);
+
+        GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
+
+        gameService.joinGame(new JoinRequest("WHITE", gameResult.gameID()), regResult.authToken());
+        GameData gameData = GameDB.getGame(gameResult.gameID());
+
+        Assertions.assertEquals("ljreds", gameData.whiteUsername());
+
+
+    }
+
+    @Test
+    public void joinGameBadRequest(){
+        RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+        RegisterResult regResult = userService.register(regRequest);
+
+        GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
+
+        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), regResult.authToken()));
+
+        Assertions.assertEquals("Error: bad request", ex.getMessage());
+
+
+    }
+    @Test
+    public void joinGameUnauthorized(){
+
+        RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+        RegisterResult regResult = userService.register(regRequest);
+
+        GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
+
+        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), UUID.randomUUID().toString()));
+
+        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+
+
+    }
+
+    @Test
+    public void clearSuccess(){
+
     }
 
 }

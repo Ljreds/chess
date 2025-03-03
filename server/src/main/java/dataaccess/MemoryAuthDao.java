@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.AuthData;
-import service.UnauthorizedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,34 +13,21 @@ public class MemoryAuthDao implements AuthDao {
 
 
     @Override
-    public void createAuth(String username) {
+    public String createAuth(String username) {
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, username);
-        authMemory.put(username, authData);
+        authMemory.put(authToken, authData);
+        return authToken;
     }
 
     @Override
-    public AuthData getAuth(String username) {
-        return authMemory.get(username);
-    }
-
-    @Override
-    public AuthData getAuthByToken(String authToken) {
-        for(AuthData auth : authMemory.values()){
-            if(Objects.equals(auth.authToken(), authToken)){
-                return auth;
-            }
-        }
-        throw new UnauthorizedException("Error: unauthorized");
+    public AuthData getAuth(String authToken) {
+        return authMemory.get(authToken);
     }
 
     @Override
     public void deleteAuth(String authToken) {
-        for(AuthData auth : authMemory.values()){
-            if(Objects.equals(auth.authToken(), authToken)){
-                authMemory.remove(auth.username());
-            }
-        }
+        authMemory.remove(authToken);
     }
 
     @Override

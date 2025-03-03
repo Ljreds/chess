@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.AuthDao;
-import dataaccess.DataAccessException;
 import dataaccess.UserDao;
 import model.*;
 import request.*;
@@ -25,10 +24,9 @@ public class UserService {
 
         }else if(userDao.getUser(user) == null){
             userDao.createUser(user, password, email);
-            authDao.createAuth(user);
+            String authToken = authDao.createAuth(user);
 
-            AuthData auth = authDao.getAuth(user);
-            return new RegisterResult(user, auth.authToken());
+            return new RegisterResult(user, authToken);
         }else{
             throw new TakenException("Error: already taken");
         }
@@ -43,23 +41,24 @@ public class UserService {
         }
         else if(userData != null){
             if(userData.password().equals(password)) {
-                authDao.createAuth(user);
+                String authToken = authDao.createAuth(user);
+                return new LoginResult(user, authToken);
             }else{
                 throw new UnauthorizedException("Error: unauthorized");
             }
-            AuthData auth = authDao.getAuth(user);
-            return new LoginResult(user, auth.authToken());
-
         }else{
             throw new UnauthorizedException("Error: unauthorized");
         }
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws UnauthorizedException {
-        String auth = logoutRequest.authToken();
-        authDao.getAuthByToken(auth);
-        authDao.deleteAuth(auth);
-        return new LogoutResult("Thank You");
+    public LogoutResult logout(LogoutRequest logoutRequest){
+        String authToken = logoutRequest.authToken();
+        AuthData auth = authDao.getAuth(authToken);
+        if(auth == null){
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+        authDao.deleteAuth(authToken);
+        return new LogoutResult("");
 
     }
 
