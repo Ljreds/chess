@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTests {
@@ -252,6 +253,19 @@ public class ServiceTests {
 
     @Test
     public void clearSuccess(){
+        RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+        RegisterResult regResult = userService.register(regRequest);
+
+        gameService.createGame(new GameRequest("game1"), regResult.authToken());
+
+        ClearService service = new ClearService(UserDB, AuthDB, GameDB);
+
+        service.clear();
+
+        Assertions.assertEquals(0, GameDB.listGames().size());
+
+
+
 
     }
 
