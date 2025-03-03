@@ -12,14 +12,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTests {
 
     private static final MemoryAuthDao authDB = new MemoryAuthDao();
     private static final MemoryUserDAO userDB = new MemoryUserDAO();
-    private static final MemoryGameDAO gameDB = new MemoryGameDAO();;
+    private static final MemoryGameDAO gameDB = new MemoryGameDAO();
     private static UserService userService;
     private static GameService gameService;
 
@@ -176,8 +175,8 @@ public class ServiceTests {
     public void createGameBadRequest(){
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
-        userService.register(request);
-        AuthData auth = authDB.getAuth("ljreds");
+        RegisterResult regResult = userService.register(request);
+        AuthData auth = authDB.getAuth(regResult.authToken());
         GameRequest outRequest = new GameRequest("");
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, auth.authToken()));
