@@ -24,7 +24,7 @@ public class LogoutHandler extends Handler<LogoutRequest>{
 
 
 
-    public Object LogoutHandle(Request request, Response response) {
+    public Object logoutHandle(Request request, Response response) {
        String auth = getAuth(request);
        LogoutRequest logoutRequest = new LogoutRequest(auth);
        try {

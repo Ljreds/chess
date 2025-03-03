@@ -23,7 +23,7 @@ public class RegisterHandler extends Handler<RegisterRequest>{
 
 
 
-    public Object RegisterHandle(Request request, Response response){
+    public Object registerHandle(Request request, Response response){
        RegisterRequest regBody = getBody(request, RegisterRequest.class);
        try {
 

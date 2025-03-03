@@ -17,20 +17,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTests {
 
-    private static final MemoryAuthDao AuthDB = new MemoryAuthDao();
-    private static final MemoryUserDAO UserDB = new MemoryUserDAO();
-    private static final MemoryGameDAO GameDB = new MemoryGameDAO();;
+    private static final MemoryAuthDao authDB = new MemoryAuthDao();
+    private static final MemoryUserDAO userDB = new MemoryUserDAO();
+    private static final MemoryGameDAO gameDB = new MemoryGameDAO();;
     private static UserService userService;
     private static GameService gameService;
 
 
     @BeforeEach
     public void setup() {
-        AuthDB.clear();
-        UserDB.clear();
-        GameDB.clear();
-        userService = new UserService(UserDB, AuthDB);
-        gameService = new GameService(AuthDB, GameDB);
+        authDB.clear();
+        userDB.clear();
+        gameDB.clear();
+        userService = new UserService(userDB, authDB);
+        gameService = new GameService(authDB, gameDB);
     }
 
 
@@ -50,7 +50,7 @@ public class ServiceTests {
 
     @Test
     public void RegisterNameTaken(){
-        UserDB.createUser("ljreds", "12345", "kall@gmail.com");
+        userDB.createUser("ljreds", "12345", "kall@gmail.com");
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
 
@@ -78,7 +78,7 @@ public class ServiceTests {
 
     @Test
     public void LoginSuccess(){
-        UserDB.createUser("ljreds", "12345", "kall@gmail.com");
+        userDB.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("ljreds", "12345");
 
         LoginResult loginResult = userService.login(request);
@@ -92,7 +92,7 @@ public class ServiceTests {
 
     @Test
     public void LoginBadRequest(){
-        UserDB.createUser("ljreds", "12345", "kall@gmail.com");
+        userDB.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("", "12345");
 
 
@@ -107,7 +107,7 @@ public class ServiceTests {
 
     @Test
     public void LoginUnauthorized(){
-        UserDB.createUser("ljreds", "12345", "kall@gmail.com");
+        userDB.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("ljreds", "joey221");
 
 
@@ -157,7 +157,7 @@ public class ServiceTests {
 
         GameResult gameResult = gameService.createGame(outRequest, result.authToken());
         int gameID = gameResult.gameID();
-        Map<Integer,GameData> map = GameDB.getGameMemory();
+        Map<Integer,GameData> map = gameDB.getGameMemory();
 
         Assertions.assertTrue(map.containsKey(gameID));
 
@@ -177,7 +177,7 @@ public class ServiceTests {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         userService.register(request);
-        AuthData auth = AuthDB.getAuth("ljreds");
+        AuthData auth = authDB.getAuth("ljreds");
         GameRequest outRequest = new GameRequest("");
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, auth.authToken()));
@@ -191,7 +191,7 @@ public class ServiceTests {
 
         RegisterResult result = userService.register(request);
 
-        Collection<GameData> list = GameDB.listGames();
+        Collection<GameData> list = gameDB.listGames();
         ListResult listResult = gameService.listGame(result.authToken());
 
 
@@ -216,7 +216,7 @@ public class ServiceTests {
         GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
 
         gameService.joinGame(new JoinRequest("WHITE", gameResult.gameID()), regResult.authToken());
-        GameData gameData = GameDB.getGame(gameResult.gameID());
+        GameData gameData = gameDB.getGame(gameResult.gameID());
 
         Assertions.assertEquals("ljreds", gameData.whiteUsername());
 
@@ -244,7 +244,9 @@ public class ServiceTests {
 
         GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
 
-        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), UUID.randomUUID().toString()));
+        String authToken =  UUID.randomUUID().toString();
+
+        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), authToken));
 
         Assertions.assertEquals("Error: unauthorized", ex.getMessage());
 
@@ -258,11 +260,11 @@ public class ServiceTests {
 
         gameService.createGame(new GameRequest("game1"), regResult.authToken());
 
-        ClearService service = new ClearService(UserDB, AuthDB, GameDB);
+        ClearService service = new ClearService(userDB, authDB, gameDB);
 
         service.clear();
 
-        Assertions.assertEquals(0, GameDB.listGames().size());
+        Assertions.assertEquals(0, gameDB.listGames().size());
 
 
 

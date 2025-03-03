@@ -23,7 +23,7 @@ public class LoginHandler extends Handler<LoginRequest>{
 
 
 
-    public Object LoginHandle(Request request, Response response) {
+    public Object loginHandle(Request request, Response response) {
        LoginRequest body = getBody(request, LoginRequest.class);
        try {
            LoginResult result = service.login(body);

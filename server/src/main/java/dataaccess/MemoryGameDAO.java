@@ -21,8 +21,8 @@ public class MemoryGameDAO implements GameDao{
     }
 
     @Override
-    public GameData getGame(int GameID) {
-        return gameMemory.get(GameID);
+    public GameData getGame(int gameID) {
+        return gameMemory.get(gameID);
     }
 
     public Map<Integer, GameData> getGameMemory() {
@@ -34,13 +34,6 @@ public class MemoryGameDAO implements GameDao{
         return gameMemory.values();
     }
 
-    @Override
-    public void updateGame(int GameID, ChessGame game) {
-//        GameData gameData = gameMemory.get(GameID);
-//        GameData newGameData = gameData.updateGame(game);
-//        gameMemory.put(GameID, newGameData);
-
-    }
 
     @Override
     public void updateBlackUser(int GameID, String blackUsername) {
@@ -51,10 +44,10 @@ public class MemoryGameDAO implements GameDao{
     }
 
     @Override
-    public void updateWhiteUser(int GameID, String whiteUsername) {
-        GameData gameData = gameMemory.get(GameID);
+    public void updateWhiteUser(int gameID, String whiteUsername) {
+        GameData gameData = gameMemory.get(gameID);
         GameData newGame = gameData.whiteJoin(whiteUsername);
-        gameMemory.put(GameID, newGame);
+        gameMemory.put(gameID, newGame);
 
     }
 
