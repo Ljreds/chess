@@ -155,20 +155,27 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor){
-                    Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
-                    for(ChessMove move : moves) {
-                        ChessPosition end = move.getEndPosition();
-                        ChessPiece endPiece = gameBoard.getPiece(end);
-                        if(endPiece != null && endPiece.getTeamColor() == teamColor){
-                            if(endPiece.getPieceType() == ChessPiece.PieceType.KING){
-                                return true;
-                            }
-                        }
-
-                    }
+                   if (checkMoves(piece, teamColor, position)){
+                       return true;
+                   }
                 }
 
             }
+        }
+        return false;
+    }
+
+    public boolean checkMoves(ChessPiece piece, TeamColor teamColor, ChessPosition position){
+        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
+        for(ChessMove move : moves) {
+            ChessPosition end = move.getEndPosition();
+            ChessPiece endPiece = gameBoard.getPiece(end);
+            if(endPiece != null && endPiece.getTeamColor() == teamColor){
+                if(endPiece.getPieceType() == ChessPiece.PieceType.KING){
+                    return true;
+                }
+            }
+
         }
         return false;
     }

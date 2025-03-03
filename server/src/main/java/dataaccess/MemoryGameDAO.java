@@ -36,10 +36,10 @@ public class MemoryGameDAO implements GameDao{
 
 
     @Override
-    public void updateBlackUser(int GameID, String blackUsername) {
-        GameData gameData = gameMemory.get(GameID);
+    public void updateBlackUser(int gameID, String blackUsername) {
+        GameData gameData = gameMemory.get(gameID);
         GameData newGame = gameData.blackJoin(blackUsername);
-        gameMemory.put(GameID, newGame);
+        gameMemory.put(gameID, newGame);
 
     }
 

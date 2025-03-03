@@ -16,26 +16,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTests {
 
-    private static final MemoryAuthDao authDB = new MemoryAuthDao();
-    private static final MemoryUserDAO userDB = new MemoryUserDAO();
-    private static final MemoryGameDAO gameDB = new MemoryGameDAO();
+    private static final MemoryAuthDao authDb = new MemoryAuthDao();
+    private static final MemoryUserDAO userDb = new MemoryUserDAO();
+    private static final MemoryGameDAO gameDb = new MemoryGameDAO();
     private static UserService userService;
     private static GameService gameService;
 
 
     @BeforeEach
     public void setup() {
-        authDB.clear();
-        userDB.clear();
-        gameDB.clear();
-        userService = new UserService(userDB, authDB);
-        gameService = new GameService(authDB, gameDB);
+        authDb.clear();
+        userDb.clear();
+        gameDb.clear();
+        userService = new UserService(userDb, authDb);
+        gameService = new GameService(authDb, gameDb);
     }
 
 
 
     @Test
-    public void RegisterSuccess(){
+    public void registerSuccess(){
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult registerResult = userService.register(request);
@@ -48,8 +48,8 @@ public class ServiceTests {
     }
 
     @Test
-    public void RegisterNameTaken(){
-        userDB.createUser("ljreds", "12345", "kall@gmail.com");
+    public void registerNameTaken(){
+        userDb.createUser("ljreds", "12345", "kall@gmail.com");
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
 
@@ -62,7 +62,7 @@ public class ServiceTests {
 
     }
     @Test
-    public void RegisterBadRequest(){
+    public void registerBadRequest(){
         RegisterRequest request = new RegisterRequest("ljreds", null, "JollyGoodFellow@gmail.com");
 
 
@@ -76,8 +76,8 @@ public class ServiceTests {
     }
 
     @Test
-    public void LoginSuccess(){
-        userDB.createUser("ljreds", "12345", "kall@gmail.com");
+    public void loginSuccess(){
+        userDb.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("ljreds", "12345");
 
         LoginResult loginResult = userService.login(request);
@@ -90,8 +90,8 @@ public class ServiceTests {
     }
 
     @Test
-    public void LoginBadRequest(){
-        userDB.createUser("ljreds", "12345", "kall@gmail.com");
+    public void loginBadRequest(){
+        userDb.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("", "12345");
 
 
@@ -105,8 +105,8 @@ public class ServiceTests {
     }
 
     @Test
-    public void LoginUnauthorized(){
-        userDB.createUser("ljreds", "12345", "kall@gmail.com");
+    public void loginUnauthorized(){
+        userDb.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("ljreds", "joey221");
 
 
@@ -120,7 +120,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LogoutSuccess(){
+    public void logoutSuccess(){
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult result = userService.register(request);
@@ -133,7 +133,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LogoutUnauthorized(){
+    public void logoutUnauthorized(){
 
         LogoutRequest outRequest = new LogoutRequest(UUID.randomUUID().toString());
 
@@ -156,7 +156,7 @@ public class ServiceTests {
 
         GameResult gameResult = gameService.createGame(outRequest, result.authToken());
         int gameID = gameResult.gameID();
-        Map<Integer,GameData> map = gameDB.getGameMemory();
+        Map<Integer,GameData> map = gameDb.getGameMemory();
 
         Assertions.assertTrue(map.containsKey(gameID));
 
@@ -176,7 +176,7 @@ public class ServiceTests {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult regResult = userService.register(request);
-        AuthData auth = authDB.getAuth(regResult.authToken());
+        AuthData auth = authDb.getAuth(regResult.authToken());
         GameRequest outRequest = new GameRequest("");
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, auth.authToken()));
@@ -190,7 +190,7 @@ public class ServiceTests {
 
         RegisterResult result = userService.register(request);
 
-        Collection<GameData> list = gameDB.listGames();
+        Collection<GameData> list = gameDb.listGames();
         ListResult listResult = gameService.listGame(result.authToken());
 
 
@@ -215,7 +215,7 @@ public class ServiceTests {
         GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
 
         gameService.joinGame(new JoinRequest("WHITE", gameResult.gameID()), regResult.authToken());
-        GameData gameData = gameDB.getGame(gameResult.gameID());
+        GameData gameData = gameDb.getGame(gameResult.gameID());
 
         Assertions.assertEquals("ljreds", gameData.whiteUsername());
 
@@ -259,11 +259,11 @@ public class ServiceTests {
 
         gameService.createGame(new GameRequest("game1"), regResult.authToken());
 
-        ClearService service = new ClearService(userDB, authDB, gameDB);
+        ClearService service = new ClearService(userDb, authDb, gameDb);
 
         service.clear();
 
-        Assertions.assertEquals(0, gameDB.listGames().size());
+        Assertions.assertEquals(0, gameDb.listGames().size());
 
 
 
