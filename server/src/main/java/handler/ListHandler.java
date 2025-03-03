@@ -1,36 +1,36 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
-import dataaccess.MemoryUserDAO;
-import request.LogoutRequest;
+import dataaccess.MemoryGameDAO;
+import request.GameRequest;
+import request.ListRequest;
 import response.ErrorResult;
-import response.LogoutResult;
+import response.GameResult;
+import response.ListResult;
+import service.GameService;
+import service.RequestException;
 import service.UnauthorizedException;
-import service.UserService;
 import spark.Request;
 import spark.Response;
 
-public class LogoutHandler extends Handler<LogoutRequest>{
+public class ListHandler extends Handler<ListRequest>{
 
-    private static LogoutHandler instance;
+    private static ListHandler instance;
 
-    public LogoutHandler(){
+    public ListHandler(){
         this.authMemory = MemoryAuthDao.getInstance();
-        this.userMemory = MemoryUserDAO.getInstance();
+        this.gameMemory = MemoryGameDAO.getInstance();
         this.gson = new Gson();
-        this.service = new UserService(userMemory, authMemory);
+        this.gameService = new GameService(authMemory, gameMemory);
     }
 
 
 
-    public Object LogoutHandle(Request request, Response response) {
+    public Object listHandle(Request request, Response response) {
        String auth = getAuth(request);
-       LogoutRequest logoutRequest = new LogoutRequest(auth);
-       try {
-           LogoutResult result = service.logout(logoutRequest);
-
+       try{
+           ListResult result = gameService.listGame(auth);
            response.type("application/json");
            response.status(200);
            return gson.toJson(result);
@@ -39,13 +39,12 @@ public class LogoutHandler extends Handler<LogoutRequest>{
            response.status(401);
            return gson.toJson(new ErrorResult(ex.getMessage()));
        }
-
     }
 
 
-    public static synchronized LogoutHandler getInstance(){
+    public static synchronized ListHandler getInstance(){
         if(instance == null){
-            instance = new LogoutHandler();
+            instance = new ListHandler();
         }
 
         return instance;

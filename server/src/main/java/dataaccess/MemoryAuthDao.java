@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import service.UnauthorizedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +26,13 @@ public class MemoryAuthDao implements AuthDao {
     }
 
     @Override
-    public AuthData getAuthByToken(String authToken) throws DataAccessException {
+    public AuthData getAuthByToken(String authToken) {
         for(AuthData auth : authMemory.values()){
             if(Objects.equals(auth.authToken(), authToken)){
                 return auth;
             }
         }
-        throw new DataAccessException("Error: invalid data");
+        throw new UnauthorizedException("Error: unauthorized");
     }
 
     @Override

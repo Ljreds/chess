@@ -1,10 +1,8 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataaccess.MemoryAuthDao;
-import dataaccess.MemoryUserDAO;
-import request.LogoutRequest;
-import service.UserService;
+import dataaccess.*;
+import service.*;
 import spark.Request;
 
 public class Handler<T> {
@@ -12,12 +10,17 @@ public class Handler<T> {
     protected Gson gson = new Gson();
     protected MemoryAuthDao authMemory;
     protected MemoryUserDAO userMemory;
+    protected MemoryGameDAO gameMemory;
     protected UserService service;
+    protected GameService gameService;
+    protected ClearService clearService;
 
 
     public Handler() {
         this.authMemory = MemoryAuthDao.getInstance();
         this.userMemory = MemoryUserDAO.getInstance();
+        this.gameMemory = MemoryGameDAO.getInstance();
+
     }
 
     public T getBody(Request request, Class<T> regClass){

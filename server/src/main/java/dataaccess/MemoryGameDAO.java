@@ -11,11 +11,13 @@ public class MemoryGameDAO implements GameDao{
     private static MemoryGameDAO instance;
 
     @Override
-    public void createGame(String gameName) {
-
-        GameData gameData = new GameData(gameName);
-        int gameID = gameData.getGameID();
+    public int createGame(String gameName) {
+        Random random = new Random();
+        int gameId = 100000 + random.nextInt(900000);
+        GameData gameData = new GameData(gameId, null, null, gameName, new ChessGame());
+        int gameID = gameData.gameID();
         gameMemory.put(gameID, gameData);
+        return gameId;
     }
 
     @Override
@@ -23,14 +25,8 @@ public class MemoryGameDAO implements GameDao{
         return gameMemory.get(GameID);
     }
 
-    @Override
-    public GameData getGameByName(String name) {
-        for(GameData game : gameMemory.values()){
-            if(Objects.equals(game.getName(), name)){
-                return gameMemory.get(game.getGameID());
-            }
-        }
-        return null;
+    public Map<Integer, GameData> getGameMemory() {
+        return gameMemory;
     }
 
     @Override
@@ -39,23 +35,27 @@ public class MemoryGameDAO implements GameDao{
     }
 
     @Override
-    public void UpdateGame(int GameID, ChessGame game) {
+    public void updateGame(int GameID, ChessGame game) {
 //        GameData gameData = gameMemory.get(GameID);
-//        GameData newgameData = gameData.updateGame(game);
-//        gameMemory.put(GameID, newgameData);
+//        GameData newGameData = gameData.updateGame(game);
+//        gameMemory.put(GameID, newGameData);
 
     }
 
     @Override
-    public void UpdateBlackUser(int GameID, String blackUsername) {
+    public void updateBlackUser(int GameID, String blackUsername) {
         GameData gameData = gameMemory.get(GameID);
-        gameData.updateBlackUser(blackUsername);
+        GameData newGame = gameData.blackJoin(blackUsername);
+        gameMemory.put(GameID, newGame);
+
     }
 
     @Override
-    public void UpdateWhiteUser(int GameID, String whiteUsername) {
+    public void updateWhiteUser(int GameID, String whiteUsername) {
         GameData gameData = gameMemory.get(GameID);
-        gameData.updateWhiteUser(whiteUsername);
+        GameData newGame = gameData.whiteJoin(whiteUsername);
+        gameMemory.put(GameID, newGame);
+
     }
 
     @Override

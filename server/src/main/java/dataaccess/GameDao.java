@@ -6,14 +6,11 @@ import model.GameData;
 import java.util.Collection;
 
 public interface GameDao {
-    void createGame(String gameName);
+    int createGame(String gameName);
     GameData getGame(int GameID);
-
-    GameData getGameByName(String name);
-
     Collection<GameData> listGames();
-    void UpdateGame(int GameID, ChessGame game);
-    void UpdateBlackUser(int GameID, String blackUsername);
-    void UpdateWhiteUser(int GameID, String whiteUsername);
+    void updateGame(int GameID, ChessGame game);
+    void updateBlackUser(int GameID, String blackUsername);
+    void updateWhiteUser(int GameID, String whiteUsername);
     void clear();
 }

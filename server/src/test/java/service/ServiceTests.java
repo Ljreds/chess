@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import request.*;
 import response.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ServiceTests {
     private final MemoryAuthDao AuthDB = new MemoryAuthDao();
     private final MemoryUserDAO UserDB = new MemoryUserDAO();
+    private final MemoryGameDAO GameDB = new MemoryGameDAO();
+
 
     @Test
     public void RegisterSuccess(){
@@ -108,7 +113,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LogoutSuccess() throws DataAccessException {
+    public void LogoutSuccess(){
         UserService userService = new UserService(UserDB, AuthDB);
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
@@ -137,6 +142,78 @@ public class ServiceTests {
 
 
 
+    }
+
+    @Test
+    public void createGameSuccess(){
+        UserService userService = new UserService(UserDB, AuthDB);
+        GameService gameService = new GameService(AuthDB, GameDB);
+        RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+
+        userService.register(request);
+        AuthData auth = AuthDB.getAuth("ljreds");
+        GameRequest outRequest = new GameRequest("newGame");
+
+        GameResult gameResult = gameService.createGame(outRequest, auth.authToken());
+        int gameID = gameResult.gameID();
+        Map<Integer,GameData> map = GameDB.getGameMemory();
+
+        Assertions.assertTrue(map.containsKey(gameID));
+
+    }
+
+    @Test
+    public void createGameUnauthorized(){
+        GameService gameService = new GameService(AuthDB, GameDB);
+
+        GameRequest outRequest = new GameRequest("newGame");
+
+        Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, UUID.randomUUID().toString()));
+
+        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+    }
+
+    @Test
+    public void createGameBadRequest(){
+        UserService userService = new UserService(UserDB, AuthDB);
+        GameService gameService = new GameService(AuthDB, GameDB);
+        RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+
+        userService.register(request);
+        AuthData auth = AuthDB.getAuth("ljreds");
+        GameRequest outRequest = new GameRequest("");
+
+        Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, auth.authToken()));
+
+        Assertions.assertEquals("Error: bad request", ex.getMessage());
+    }
+
+    @Test
+    public void listGameSuccess(){
+        UserService userService = new UserService(UserDB, AuthDB);
+        GameService gameService = new GameService(AuthDB, GameDB);
+        RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
+
+        userService.register(request);
+        AuthData auth = AuthDB.getAuth("ljreds");
+
+        Collection<GameData> list = GameDB.listGames();
+        ListResult listResult = gameService.listGame(auth.authToken());
+
+
+        Assertions.assertEquals(new ListResult(list), listResult);
+
+
+
+    }
+
+    @Test
+    public void listGameUnauthorized(){
+        GameService gameService = new GameService(AuthDB, GameDB);
+
+        Exception ex = assertThrows(Exception.class, () -> gameService.listGame(UUID.randomUUID().toString()));
+
+        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
     }
 
 }

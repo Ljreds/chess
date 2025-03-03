@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.*;
 import request.*;
+import response.ErrorResult;
 import response.RegisterResult;
 import service.*;
 import spark.Request;
@@ -25,6 +26,7 @@ public class RegisterHandler extends Handler<RegisterRequest>{
     public Object RegisterHandle(Request request, Response response){
        RegisterRequest regBody = getBody(request, RegisterRequest.class);
        try {
+
            RegisterResult result = service.register(regBody);
 
            response.type("application/json");
@@ -33,11 +35,11 @@ public class RegisterHandler extends Handler<RegisterRequest>{
        }catch(TakenException ex){
            response.type("application/json");
            response.status(403);
-           return gson.toJson(ex.getMessage());
+           return gson.toJson(new ErrorResult(ex.getMessage()));
        }catch(RequestException ex){
            response.type("application/json");
            response.status(400);
-           return gson.toJson(ex.getMessage());
+           return gson.toJson(new ErrorResult(ex.getMessage()));
        }
 
     }

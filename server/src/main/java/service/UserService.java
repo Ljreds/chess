@@ -20,7 +20,7 @@ public class UserService {
         String user = registerRequest.username();
         String password = registerRequest.password();
         String email = registerRequest.email();
-        if(user.isEmpty() ||password.isEmpty()||email.isEmpty()){
+        if(user == null ||password == null||email == null){
             throw new RequestException("Error: bad request");
 
         }else if(userDao.getUser(user) == null){
@@ -33,6 +33,7 @@ public class UserService {
             throw new TakenException("Error: already taken");
         }
     }
+
     public LoginResult login(LoginRequest loginRequest){
         String user = loginRequest.username();
         String password = loginRequest.password();
@@ -50,18 +51,16 @@ public class UserService {
             return new LoginResult(user, auth.authToken());
 
         }else{
-            throw new UnauthorizedException("Error: Unauthorized");
+            throw new UnauthorizedException("Error: unauthorized");
         }
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
+    public LogoutResult logout(LogoutRequest logoutRequest) throws UnauthorizedException {
         String auth = logoutRequest.authToken();
-        if(authDao.getAuthByToken(auth) != null){
-            authDao.deleteAuth(auth);
-            return new LogoutResult("Thank You");
-        }else{
-            throw new UnauthorizedException("Error: unauthorized");
-        }
+        authDao.getAuthByToken(auth);
+        authDao.deleteAuth(auth);
+        return new LogoutResult("Thank You");
+
     }
 
 }

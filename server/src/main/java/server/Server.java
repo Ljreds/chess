@@ -13,10 +13,11 @@ public class Server {
         Spark.post("/user", (req, res) -> (RegisterHandler.getInstance().RegisterHandle(req, res)));
         Spark.post("/session", (req, res) -> (LoginHandler.getInstance().LoginHandle(req, res)));
         Spark.delete("/session",(req, res) -> (LogoutHandler.getInstance().LogoutHandle(req, res)));
+        Spark.post("/game", (req, res) -> (GameHandler.getInstance().gameHandle(req,res)));
+        Spark.get("/game", (req, res) -> (ListHandler.getInstance().listHandle(req, res)));
+        Spark.put("/game", (req, res) -> (JoinHandler.getInstance().joinHandle(req, res)));
+        Spark.delete("/db", (req, res) -> (ClearHandler.getInstance().clearHandle(req, res)));
 
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
