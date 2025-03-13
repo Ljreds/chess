@@ -1,8 +1,6 @@
 package handler;
 
-import com.google.gson.Gson;
-import dataaccess.MemoryAuthDao;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import request.LoginRequest;
 import response.ErrorResult;
 import response.LoginResult;
@@ -13,15 +11,6 @@ import spark.Response;
 public class LoginHandler extends Handler<LoginRequest>{
 
     private static LoginHandler instance;
-
-    public LoginHandler(){
-        this.authMemory = MemoryAuthDao.getInstance();
-        this.userMemory = MemoryUserDAO.getInstance();
-        this.gson = new Gson();
-        this.service = new UserService(userMemory, authMemory);
-    }
-
-
 
     public Object loginHandle(Request request, Response response) {
        LoginRequest body = getBody(request, LoginRequest.class);
@@ -38,6 +27,10 @@ public class LoginHandler extends Handler<LoginRequest>{
        }catch(RequestException ex){
            response.type("application/json");
            response.status(400);
+           return gson.toJson(new ErrorResult(ex.getMessage()));
+       }catch(DataAccessException ex){
+           response.type("application/json");
+           response.status(500);
            return gson.toJson(new ErrorResult(ex.getMessage()));
        }
 

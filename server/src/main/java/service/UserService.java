@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDao;
+import dataaccess.DataAccessException;
 import dataaccess.UserDao;
 import model.*;
 import request.*;
@@ -15,7 +16,7 @@ public class UserService {
         this.userDao = userDao;
         this.authDao = authDao;
     }
-    public RegisterResult register(RegisterRequest registerRequest) {
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String user = registerRequest.username();
         String password = registerRequest.password();
         String email = registerRequest.email();
@@ -32,7 +33,7 @@ public class UserService {
         }
     }
 
-    public LoginResult login(LoginRequest loginRequest){
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         String user = loginRequest.username();
         String password = loginRequest.password();
         UserData userData = userDao.getUser(user);

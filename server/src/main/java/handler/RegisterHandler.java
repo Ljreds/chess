@@ -1,6 +1,5 @@
 package handler;
 
-import com.google.gson.Gson;
 import dataaccess.*;
 import request.*;
 import response.ErrorResult;
@@ -12,16 +11,6 @@ import spark.Response;
 public class RegisterHandler extends Handler<RegisterRequest>{
 
     private static RegisterHandler instance;
-
-    public  RegisterHandler(){
-        this.authMemory = MemoryAuthDao.getInstance();
-        this.userMemory = MemoryUserDAO.getInstance();
-        this.gson = new Gson();
-        this.service = new UserService(userMemory, authMemory);
-
-    }
-
-
 
     public Object registerHandle(Request request, Response response){
        RegisterRequest regBody = getBody(request, RegisterRequest.class);
@@ -39,6 +28,10 @@ public class RegisterHandler extends Handler<RegisterRequest>{
        }catch(RequestException ex){
            response.type("application/json");
            response.status(400);
+           return gson.toJson(new ErrorResult(ex.getMessage()));
+       }catch(DataAccessException ex){
+           response.type("application/json");
+           response.status(500);
            return gson.toJson(new ErrorResult(ex.getMessage()));
        }
 

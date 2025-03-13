@@ -6,9 +6,9 @@ import model.UserData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemoryUserDAO implements UserDao{
+public class MemoryUserDao implements UserDao{
     private final Map<String, UserData> users = new HashMap<>();
-    private static MemoryUserDAO instance;
+    private static MemoryUserDao instance;
 
     @Override
     public void createUser(String username, String password, String email) {
@@ -26,9 +26,9 @@ public class MemoryUserDAO implements UserDao{
         users.clear();
     }
 
-    public static synchronized MemoryUserDAO getInstance(){
+    public static synchronized MemoryUserDao getInstance(){
         if(instance == null){
-            instance = new MemoryUserDAO();
+            instance = new MemoryUserDao();
         }
 
         return instance;

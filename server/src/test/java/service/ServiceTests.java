@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ServiceTests {
 
     private static final MemoryAuthDao AUTH_MEMORY = new MemoryAuthDao();
-    private static final MemoryUserDAO USER_MEMORY = new MemoryUserDAO();
-    private static final MemoryGameDAO GAME_MEMORY = new MemoryGameDAO();
+    private static final MemoryUserDao USER_MEMORY = new MemoryUserDao();
+    private static final MemoryGameDao GAME_MEMORY = new MemoryGameDao();
     private static UserService userService;
     private static GameService gameService;
 
@@ -35,7 +35,7 @@ public class ServiceTests {
 
 
     @Test
-    public void registerSuccess(){
+    public void registerSuccess() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult registerResult = userService.register(request);
@@ -76,7 +76,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void loginSuccess(){
+    public void loginSuccess() throws DataAccessException {
         USER_MEMORY.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("ljreds", "12345");
 
@@ -120,7 +120,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void logoutSuccess(){
+    public void logoutSuccess() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult result = userService.register(request);
@@ -148,7 +148,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void createGameSuccess(){
+    public void createGameSuccess() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult result = userService.register(request);
@@ -172,7 +172,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void createGameBadRequest(){
+    public void createGameBadRequest() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult regResult = userService.register(request);
@@ -185,7 +185,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void listGameSuccess(){
+    public void listGameSuccess() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult result = userService.register(request);
@@ -208,7 +208,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void joinGameSuccess(){
+    public void joinGameSuccess() throws DataAccessException {
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
 
@@ -223,7 +223,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void joinGameBadRequest(){
+    public void joinGameBadRequest() throws DataAccessException {
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
 
@@ -236,7 +236,7 @@ public class ServiceTests {
 
     }
     @Test
-    public void joinGameUnauthorized(){
+    public void joinGameUnauthorized() throws DataAccessException {
 
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
@@ -253,7 +253,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void clearSuccess(){
+    public void clearSuccess() throws DataAccessException {
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
 

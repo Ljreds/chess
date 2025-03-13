@@ -8,18 +8,18 @@ import spark.Request;
 public class Handler<T> {
 
     protected Gson gson = new Gson();
-    protected MemoryAuthDao authMemory;
-    protected MemoryUserDAO userMemory;
-    protected MemoryGameDAO gameMemory;
+    protected SqlAuthDao authMemory;
+    protected SqlUserDao userMemory;
+    protected SqlGameDao gameMemory;
     protected UserService service;
     protected GameService gameService;
     protected ClearService clearService;
 
 
     public Handler() {
-        this.authMemory = MemoryAuthDao.getInstance();
-        this.userMemory = MemoryUserDAO.getInstance();
-        this.gameMemory = MemoryGameDAO.getInstance();
+        this.authMemory = SqlAuthDao.getInstance();
+        this.userMemory = SqlUserDao.getInstance();
+        this.gameMemory = SqlGameDao.getInstance();
 
     }
 

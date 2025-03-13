@@ -1,12 +1,8 @@
 package handler;
 
-import com.google.gson.Gson;
-import dataaccess.MemoryAuthDao;
-import dataaccess.MemoryGameDAO;
 import request.GameRequest;
 import response.ErrorResult;
 import response.GameResult;
-import service.GameService;
 import service.RequestException;
 import service.UnauthorizedException;
 import spark.Request;
@@ -15,13 +11,6 @@ import spark.Response;
 public class GameHandler extends Handler<GameRequest>{
 
     private static GameHandler instance;
-
-    public GameHandler(){
-        this.authMemory = MemoryAuthDao.getInstance();
-        this.gameMemory = MemoryGameDAO.getInstance();
-        this.gson = new Gson();
-        this.gameService = new GameService(authMemory, gameMemory);
-    }
 
 
 

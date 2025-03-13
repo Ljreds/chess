@@ -5,10 +5,10 @@ import model.GameData;
 
 import java.util.*;
 
-public class MemoryGameDAO implements GameDao{
+public class MemoryGameDao implements GameDao{
 
     private final Map<Integer, GameData> gameMemory = new HashMap<>();
-    private static MemoryGameDAO instance;
+    private static MemoryGameDao instance;
 
     @Override
     public int createGame(String gameName) {
@@ -56,9 +56,9 @@ public class MemoryGameDAO implements GameDao{
         gameMemory.clear();
     }
 
-    public static synchronized MemoryGameDAO getInstance(){
+    public static synchronized MemoryGameDao getInstance(){
         if(instance == null){
-            instance = new MemoryGameDAO();
+            instance = new MemoryGameDao();
         }
 
         return instance;

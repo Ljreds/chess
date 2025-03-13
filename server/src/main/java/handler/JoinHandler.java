@@ -1,12 +1,8 @@
 package handler;
 
-import com.google.gson.Gson;
-import dataaccess.MemoryAuthDao;
-import dataaccess.MemoryGameDAO;
 import request.JoinRequest;
 import response.ErrorResult;
 import response.JoinResult;
-import service.GameService;
 import service.RequestException;
 import service.TakenException;
 import service.UnauthorizedException;
@@ -16,13 +12,6 @@ import spark.Response;
 public class JoinHandler extends Handler<JoinRequest>{
 
     private static JoinHandler instance;
-
-    public JoinHandler(){
-        this.authMemory = MemoryAuthDao.getInstance();
-        this.gameMemory = MemoryGameDAO.getInstance();
-        this.gson = new Gson();
-        this.gameService = new GameService(authMemory, gameMemory);
-    }
 
 
 
