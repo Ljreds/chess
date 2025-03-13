@@ -17,7 +17,7 @@ public class DataAccessTests {
 
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws DataAccessException {
         AUTH_DAO.clear();
         USER_DAO.clear();
         GAME_DAO.clear();

@@ -15,13 +15,13 @@ public class ClearHandler extends Handler<ClearRequest>{
     }
 
 
-    public Object clearHandle(Request request, Response response) {
-
+    public Object clearHandle(Request request, Response response) throws DataAccessException {
            clearService.clear();
            ClearResult result = new ClearResult();
            response.type("application/json");
            response.status(200);
            return gson.toJson(result);
+
 
     }
 

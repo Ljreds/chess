@@ -18,15 +18,15 @@ public class SqlUserDao implements UserDao{
         var statement = "INSERT into UserData (username, password, email) VALUES (?, ?, ?)";
         try(var conn = DatabaseManager.getConnection()) {
             try(var preparedStatement = conn.prepareStatement(statement)){
-                preparedStatement.setString(0, username);
-                preparedStatement.setString(1, password);
-                preparedStatement.setString(2, email);
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, password);
+                preparedStatement.setString(3, email);
 
                 preparedStatement.executeUpdate();
 
             }
         } catch (SQLException | DataAccessException ex) {
-            throw new DataAccessException("Unable to configure database: %s");
+            throw new DataAccessException("unable to create new user");
         }
 
     }
@@ -46,13 +46,24 @@ public class SqlUserDao implements UserDao{
             }
 
         }catch(SQLException | DataAccessException ex) {
-            throw new DataAccessException("Unable to configure database: %s");
+            throw new DataAccessException("unable to access database");
 
         }
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
+        var statement = "DROP table UserData";
+        try(var conn = DatabaseManager.getConnection()){
+            try(PreparedStatement stmt = conn.prepareStatement(statement)){
+                stmt.executeUpdate();
+
+            }
+
+        }catch(SQLException | DataAccessException ex) {
+            throw new DataAccessException("unable to clear database");
+
+        }
 
     }
 
@@ -81,10 +92,13 @@ public class SqlUserDao implements UserDao{
             )
             """,
             """
-            CREATE TABLE IF NOT EXISTS  GameData (
-              `gameID' varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`)
+            CREATE TABLE IF NOT EXISTS GameData (
+               `gameID` int NOT NULL AUTO_INCREMENT,
+               `whiteUsername` varchar(256),
+               `blackUsername` varchar(256),
+               `gameName` varchar(256) NOT NULL,
+               `game` TEXT NOT NULL,
+               PRIMARY KEY (`gameID`)
             )
             """
     };
