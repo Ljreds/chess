@@ -12,6 +12,8 @@ public class DataAccessTests {
     private final SqlAuthDao AUTH_DAO = SqlAuthDao.getInstance();
     private final SqlGameDao GAME_DAO = SqlGameDao.getInstance();
 
+    public DataAccessTests() throws DataAccessException {
+    }
 
 
     @BeforeEach

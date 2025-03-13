@@ -12,6 +12,9 @@ public class RegisterHandler extends Handler<RegisterRequest>{
 
     private static RegisterHandler instance;
 
+    public RegisterHandler() throws DataAccessException {
+    }
+
     public Object registerHandle(Request request, Response response){
        RegisterRequest regBody = getBody(request, RegisterRequest.class);
        try {
@@ -38,7 +41,7 @@ public class RegisterHandler extends Handler<RegisterRequest>{
     }
 
 
-    public static synchronized RegisterHandler getInstance(){
+    public static synchronized RegisterHandler getInstance() throws DataAccessException {
         if(instance == null){
             instance = new RegisterHandler();
         }

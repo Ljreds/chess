@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import request.LogoutRequest;
 import response.ErrorResult;
 import response.LogoutResult;
@@ -11,6 +12,8 @@ public class LogoutHandler extends Handler<LogoutRequest>{
 
     private static LogoutHandler instance;
 
+    public LogoutHandler() throws DataAccessException {
+    }
 
 
     public Object logoutHandle(Request request, Response response) {
@@ -31,7 +34,7 @@ public class LogoutHandler extends Handler<LogoutRequest>{
     }
 
 
-    public static synchronized LogoutHandler getInstance(){
+    public static synchronized LogoutHandler getInstance() throws DataAccessException {
         if(instance == null){
             instance = new LogoutHandler();
         }

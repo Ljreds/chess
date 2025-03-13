@@ -11,6 +11,8 @@ public class ClearHandler extends Handler<ClearRequest>{
 
     private static ClearHandler instance;
 
+    public ClearHandler() throws DataAccessException {
+    }
 
 
     public Object clearHandle(Request request, Response response) {
@@ -24,7 +26,7 @@ public class ClearHandler extends Handler<ClearRequest>{
     }
 
 
-    public static synchronized ClearHandler getInstance(){
+    public static synchronized ClearHandler getInstance() throws DataAccessException {
         if(instance == null){
             instance = new ClearHandler();
         }

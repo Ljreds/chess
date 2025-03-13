@@ -18,14 +18,9 @@ public class Handler<T> {
 
 
     public Handler() throws DataAccessException {
-        try {
             this.authMemory = SqlAuthDao.getInstance();
             this.userMemory = SqlUserDao.getInstance();
             this.gameMemory = SqlGameDao.getInstance();
-        }catch{
-            Response response = new Response();
-
-        }
     }
 
     public T getBody(Request request, Class<T> regClass){

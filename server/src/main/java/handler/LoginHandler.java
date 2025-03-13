@@ -12,6 +12,9 @@ public class LoginHandler extends Handler<LoginRequest>{
 
     private static LoginHandler instance;
 
+    public LoginHandler() throws DataAccessException {
+    }
+
     public Object loginHandle(Request request, Response response) {
        LoginRequest body = getBody(request, LoginRequest.class);
        try {
@@ -37,7 +40,7 @@ public class LoginHandler extends Handler<LoginRequest>{
     }
 
 
-    public static synchronized LoginHandler getInstance(){
+    public static synchronized LoginHandler getInstance() throws DataAccessException {
         if(instance == null){
             instance = new LoginHandler();
         }

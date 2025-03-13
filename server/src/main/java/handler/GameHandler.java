@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import request.GameRequest;
 import response.ErrorResult;
 import response.GameResult;
@@ -12,6 +13,8 @@ public class GameHandler extends Handler<GameRequest>{
 
     private static GameHandler instance;
 
+    public GameHandler() throws DataAccessException {
+    }
 
 
     public Object gameHandle(Request request, Response response) {
@@ -35,7 +38,7 @@ public class GameHandler extends Handler<GameRequest>{
     }
 
 
-    public static synchronized GameHandler getInstance(){
+    public static synchronized GameHandler getInstance() throws DataAccessException {
         if(instance == null){
             instance = new GameHandler();
         }

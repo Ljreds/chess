@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import request.ListRequest;
 import response.ErrorResult;
 import response.ListResult;
@@ -10,6 +11,9 @@ import spark.Response;
 public class ListHandler extends Handler<ListRequest>{
 
     private static ListHandler instance;
+
+    public ListHandler() throws DataAccessException {
+    }
 
 
     public Object listHandle(Request request, Response response) {
@@ -27,7 +31,7 @@ public class ListHandler extends Handler<ListRequest>{
     }
 
 
-    public static synchronized ListHandler getInstance(){
+    public static synchronized ListHandler getInstance() throws DataAccessException {
         if(instance == null){
             instance = new ListHandler();
         }

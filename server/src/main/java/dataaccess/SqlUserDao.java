@@ -81,13 +81,12 @@ public class SqlUserDao implements UserDao{
             )
             """,
             """
-            CREATE TABLE IF NOT EXISTS  AuthData (
-              `authToken` varchar(256) NOT NULL,
+            CREATE TABLE IF NOT EXISTS  GameData (
+              `gameID' varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
               PRIMARY KEY (`authToken`)
             )
-            """,
-
+            """
     };
 
     public void configureDatabase() throws DataAccessException {

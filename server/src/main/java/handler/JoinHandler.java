@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import request.JoinRequest;
 import response.ErrorResult;
 import response.JoinResult;
@@ -13,6 +14,8 @@ public class JoinHandler extends Handler<JoinRequest>{
 
     private static JoinHandler instance;
 
+    public JoinHandler() throws DataAccessException {
+    }
 
 
     public Object joinHandle(Request request, Response response) {
@@ -41,7 +44,7 @@ public class JoinHandler extends Handler<JoinRequest>{
     }
 
 
-    public static synchronized JoinHandler getInstance(){
+    public static synchronized JoinHandler getInstance() throws DataAccessException {
         if(instance == null){
             instance = new JoinHandler();
         }
