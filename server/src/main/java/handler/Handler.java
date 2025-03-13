@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import service.*;
 import spark.Request;
+import spark.Response;
 
 public class Handler<T> {
 
@@ -16,11 +17,15 @@ public class Handler<T> {
     protected ClearService clearService;
 
 
-    public Handler() {
-        this.authMemory = SqlAuthDao.getInstance();
-        this.userMemory = SqlUserDao.getInstance();
-        this.gameMemory = SqlGameDao.getInstance();
+    public Handler() throws DataAccessException {
+        try {
+            this.authMemory = SqlAuthDao.getInstance();
+            this.userMemory = SqlUserDao.getInstance();
+            this.gameMemory = SqlGameDao.getInstance();
+        }catch{
+            Response response = new Response();
 
+        }
     }
 
     public T getBody(Request request, Class<T> regClass){
