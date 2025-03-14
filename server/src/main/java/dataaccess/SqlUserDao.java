@@ -36,24 +36,28 @@ public class SqlUserDao implements UserDao{
         var statement = "SELECT username, password, email from UserData WHERE username =?";
         try(var conn = DatabaseManager.getConnection()){
             try(PreparedStatement stmt = conn.prepareStatement(statement)){
-                var rs = stmt.executeQuery();
-                var user = rs.getString("username");
-                var password = rs.getString("password");
-                var email = rs.getString("email");
+                stmt.setString(1, username);
+                try(var rs = stmt.executeQuery()) {
+                    if(rs.next()) {
+                        var user = rs.getString("username");
+                        var password = rs.getString("password");
+                        var email = rs.getString("email");
 
-                return new UserData(user, password, email);
-
+                        return new UserData(user, password, email);
+                    }
+                }
             }
 
         }catch(SQLException | DataAccessException ex) {
             throw new DataAccessException("unable to access database");
 
         }
+        return null;
     }
 
     @Override
     public void clear() throws DataAccessException {
-        var statement = "DROP table UserData";
+        var statement = "TRUNCATE TABLE UserData";
         try(var conn = DatabaseManager.getConnection()){
             try(PreparedStatement stmt = conn.prepareStatement(statement)){
                 stmt.executeUpdate();
