@@ -4,6 +4,7 @@ import dataaccess.AuthDao;
 import dataaccess.DataAccessException;
 import dataaccess.UserDao;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 import request.*;
 import response.*;
 
@@ -41,7 +42,7 @@ public class UserService {
             throw new RequestException("Error: bad request");
         }
         else if(userData != null){
-            if(userData.password().equals(password)) {
+            if(verifyUser(password, userData.password())) {
                 String authToken = authDao.createAuth(user);
                 return new LoginResult(user, authToken);
             }else{
@@ -52,7 +53,11 @@ public class UserService {
         }
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest){
+    boolean verifyUser(String password, String hashedPassword) {
+        return BCrypt.checkpw(password, hashedPassword);
+    }
+
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
         String authToken = logoutRequest.authToken();
         AuthData auth = authDao.getAuth(authToken);
         if(auth == null){

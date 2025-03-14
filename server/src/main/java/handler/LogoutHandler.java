@@ -16,7 +16,7 @@ public class LogoutHandler extends Handler<LogoutRequest>{
     }
 
 
-    public Object logoutHandle(Request request, Response response) {
+    public Object logoutHandle(Request request, Response response) throws DataAccessException {
        String auth = getAuth(request);
        LogoutRequest logoutRequest = new LogoutRequest(auth);
        try {
@@ -29,6 +29,8 @@ public class LogoutHandler extends Handler<LogoutRequest>{
            response.type("application/json");
            response.status(401);
            return gson.toJson(new ErrorResult(ex.getMessage()));
+       } catch (DataAccessException ex) {
+           throw new DataAccessException(ex.getMessage());
        }
 
     }
