@@ -22,11 +22,15 @@ public class DataAccessTests {
 
     @BeforeEach
     public void setup() throws DataAccessException {
+        USER_DAO.createUser("testUser", "hello1", "test@test.com");
+        testAuth = AUTH_DAO.createAuth("testUser");
+    }
+
+    @AfterEach
+    public void tearDown() throws DataAccessException{
         AUTH_DAO.clear();
         USER_DAO.clear();
         GAME_DAO.clear();
-        USER_DAO.createUser("testUser", "hello1", "test@test.com");
-        testAuth = AUTH_DAO.createAuth("testUser");
     }
 
 
@@ -36,10 +40,9 @@ public class DataAccessTests {
 
         UserData answer = USER_DAO.getUser("ljreds");
 
-        String hashedPassword = BCrypt.hashpw("12345", BCrypt.gensalt());
 
        assertEquals("ljreds", answer.username());
-       assertTrue(BCrypt.checkpw("12345", hashedPassword));
+       assertTrue(BCrypt.checkpw("12345", answer.password()));
        assertEquals("example@example.com", answer.email());
 
     }
@@ -58,9 +61,9 @@ public class DataAccessTests {
     public void getUserSuccess() throws DataAccessException {
         UserData answer = USER_DAO.getUser("testUser");
 
-        UserData expected = new UserData("testUser", "hello1", "test@test.com");
-
-        assertEquals(expected, answer);
+        assertEquals("testUser", answer.username());
+        assertTrue(BCrypt.checkpw("hello1", answer.password()));
+        assertEquals("test@test.com", answer.email());
 
     }
 
@@ -110,6 +113,24 @@ public class DataAccessTests {
 
         assertNull(answer);
 
+    }
+
+    @Test
+    public void deleteAuthSuccess() throws DataAccessException{
+        int numDeleted = AUTH_DAO.deleteAuth("testUser");
+
+        AuthData answer = AUTH_DAO.getAuth("testUser");
+
+        assertNull(answer);
+        assertEquals(1, numDeleted);
+
+    }
+
+    @Test
+    public void deleteAuthFailure() throws DataAccessException {
+        int numDeleted = AUTH_DAO.deleteAuth("test");
+
+        assertEquals(0, numDeleted);
     }
 
 
