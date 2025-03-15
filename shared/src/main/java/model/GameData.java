@@ -10,4 +10,7 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
     public GameData blackJoin(String newBlack){
         return new GameData(gameID, whiteUsername, newBlack, gameName, game);
     }
+    public GameData updateGame(ChessGame newGame){
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, newGame);
+    }
 }

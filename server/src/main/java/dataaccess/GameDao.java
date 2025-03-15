@@ -6,10 +6,11 @@ import model.GameData;
 import java.util.Collection;
 
 public interface GameDao {
-    int createGame(String gameName);
+    int createGame(String gameName) throws DataAccessException;
     GameData getGame(int gameID);
     Collection<GameData> listGames();
     void updateBlackUser(int gameID, String blackUsername);
     void updateWhiteUser(int gameID, String whiteUsername);
+    void updateGame(int gameID, ChessGame game);
     void clear();
 }
