@@ -49,18 +49,17 @@ public class SqlAuthDao implements AuthDao{
     }
 
     @Override
-    public void deleteAuth(String username) throws DataAccessException {
+    public int deleteAuth(String username) throws DataAccessException {
         var statement = "DELETE FROM AuthData WHERE username =?";
         try(var conn = DatabaseManager.getConnection()){
             try(PreparedStatement stmt = conn.prepareStatement(statement)){
                 stmt.setString(1, username);
-                stmt.executeUpdate();
+                return stmt.executeUpdate();
             }
         }catch(SQLException | DataAccessException ex) {
             throw new DataAccessException("Error: unable to access database");
 
         }
-
     }
 
     @Override
