@@ -18,7 +18,7 @@ public class GameService {
         this.gameDao = gameDao;
     }
 
-    public GameResult createGame(GameRequest gameRequest, String authToken){
+    public GameResult createGame(GameRequest gameRequest, String authToken) throws DataAccessException {
         String name = gameRequest.gameName();
         AuthData auth = authDao.getAuth(authToken);
         if(auth == null){
@@ -32,7 +32,7 @@ public class GameService {
 
     }
 
-    public ListResult listGame(String authToken) {
+    public ListResult listGame(String authToken) throws DataAccessException {
         AuthData auth = authDao.getAuth(authToken);
         if(auth == null){
             throw new UnauthorizedException("Error: unauthorized");
@@ -42,7 +42,7 @@ public class GameService {
 
     }
 
-    public JoinResult joinGame(JoinRequest joinRequest, String authToken) {
+    public JoinResult joinGame(JoinRequest joinRequest, String authToken) throws DataAccessException {
         int gameID = joinRequest.gameID();
         String playerColor = joinRequest.playerColor();
         AuthData auth = authDao.getAuth(authToken);

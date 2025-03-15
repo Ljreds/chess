@@ -65,8 +65,30 @@ public class DatabaseManager {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
             return conn;
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+
+    private Connection conn;
+
+    public void openConnection() throws DataAccessException{
+        try(var conn = getConnection()) {
+            conn.setAutoCommit(false);
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+
+    public void closeConnection(boolean commit) throws DataAccessException{
+        try{
+            if(commit){
+                conn.commit();
+            }else{
+                conn.rollback();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
         }
     }
 

@@ -21,20 +21,20 @@ public class SqlAuthDao implements AuthDao{
 
             }
         } catch (SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to create new authToken");
+            throw new DataAccessException("Error: unable to create new authToken");
         }
         return authToken;
     }
 
     @Override
-    public AuthData getAuth(String username) throws DataAccessException{
-        var statement = "SELECT authToken, username from AuthData WHERE username =?";
+    public AuthData getAuth(String authToken) throws DataAccessException{
+        var statement = "SELECT authToken, username from AuthData WHERE authToken =?";
         try(var conn = DatabaseManager.getConnection()){
             try(PreparedStatement stmt = conn.prepareStatement(statement)){
-                stmt.setString(1, username);
+                stmt.setString(1, authToken);
                 try(var rs = stmt.executeQuery()) {
                     if(rs.next()) {
-                        var auth = rs.getString("username");
+                        var auth = rs.getString("authToken");
                         var user = rs.getString("username");
 
                         return new AuthData(auth, user);
@@ -42,7 +42,7 @@ public class SqlAuthDao implements AuthDao{
                 }
             }
         }catch(SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to access database");
+            throw new DataAccessException("Error: unable to access database");
 
         }
         return null;
@@ -54,7 +54,18 @@ public class SqlAuthDao implements AuthDao{
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE TABLE AuthData";
+        try(var conn = DatabaseManager.getConnection()){
+            try(PreparedStatement stmt = conn.prepareStatement(statement)){
+                stmt.executeUpdate();
+
+            }
+
+        }catch(SQLException | DataAccessException ex) {
+            throw new DataAccessException("unable to clear database");
+
+        }
 
     }
 

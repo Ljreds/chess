@@ -33,6 +33,10 @@ public class GameHandler extends Handler<GameRequest>{
            response.type("application/json");
            response.status(400);
            return gson.toJson(new ErrorResult(ex.getMessage()));
+       } catch (DataAccessException ex) {
+           response.type("application/json");
+           response.status(500);
+           return gson.toJson(new ErrorResult(ex.getMessage()));
        }
 
     }
