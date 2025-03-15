@@ -70,27 +70,6 @@ public class DatabaseManager {
         }
     }
 
-    private Connection conn;
-
-    public void openConnection() throws DataAccessException{
-        try(var conn = getConnection()) {
-            conn.setAutoCommit(false);
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
-        }
-    }
-
-    public void closeConnection(boolean commit) throws DataAccessException{
-        try{
-            if(commit){
-                conn.commit();
-            }else{
-                conn.rollback();
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
-        }
-    }
 
     private final String[] createStatements = {
             """
