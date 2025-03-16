@@ -4,9 +4,14 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.GameData;
+import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -48,13 +53,64 @@ public class SqlGameDao implements GameDao{
     }
 
     @Override
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws DataAccessException {
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game from GameData WHERE gameID =?";
+        try(var conn = DatabaseManager.getConnection()){
+            try(PreparedStatement stmt = conn.prepareStatement(statement)){
+                stmt.setInt(1, gameID);
+                try(var rs = stmt.executeQuery()) {
+                    if(rs.next()) {
+                        return createGameData(rs);
+                    }
+                }
+            }
+
+        }catch(SQLException | DataAccessException ex) {
+            throw new DataAccessException("unable to access database");
+
+        }
         return null;
     }
 
     @Override
-    public Collection<GameData> listGames() {
-        return List.of();
+    public Collection<GameData> listGames() throws DataAccessException {
+        Collection<GameData> gameList = new ArrayList<>();
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game from GameData";
+        try(var conn = DatabaseManager.getConnection()){
+            try(PreparedStatement stmt = conn.prepareStatement(statement)){
+                try(var rs = stmt.executeQuery()) {
+                    while(rs.next()) {
+                        GameData gameData = createGameData(rs);
+
+                        gameList.add(gameData);
+                    }
+
+                    return gameList;
+                }
+            }
+
+        }catch(SQLException | DataAccessException ex) {
+            throw new DataAccessException("unable to access database");
+
+        }
+    }
+
+    private GameData createGameData(ResultSet rs) throws DataAccessException {
+        try{
+                var gameId = rs.getInt("gameID");
+                var white = rs.getString("whiteUsername");
+                var black = rs.getString("blackUsername");
+                var name = rs.getString("gameName");
+                var game = rs.getString("game");
+
+                ChessGame chess = gameDeserialize(game);
+
+                return new GameData(gameId, white, black, name, chess);
+
+        } catch(SQLException ex) {
+            throw new DataAccessException("unable to access database");
+        }
+
     }
 
     @Override
