@@ -32,7 +32,7 @@ public class MemoryGameDao implements GameDao{
 
 
     @Override
-    public void updateUser(int gameID, String username, String color) {
+    public int updateUser(int gameID, String username, String color) {
         GameData gameData = gameMemory.get(gameID);
         GameData newGame;
         if(Objects.equals(color, "WHITE")){
@@ -42,13 +42,15 @@ public class MemoryGameDao implements GameDao{
         }
         gameMemory.put(gameID, newGame);
 
+        return gameID;
     }
 
     @Override
-    public void updateGame(int gameID, ChessGame game) {
+    public int updateGame(int gameID, ChessGame game) {
         GameData gameData = gameMemory.get(gameID);
         GameData newGame = gameData.updateGame(game);
         gameMemory.put(gameID, newGame);
+        return gameID;
     }
 
     @Override

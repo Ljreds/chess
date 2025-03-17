@@ -63,7 +63,7 @@ public class UserService {
         if(auth == null){
             throw new UnauthorizedException("Error: unauthorized");
         }
-        authDao.deleteAuth(authToken);
+        authDao.deleteAuth(auth.authToken());
         return new LogoutResult("");
 
     }

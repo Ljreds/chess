@@ -110,7 +110,7 @@ public class SqlGameDao implements GameDao{
     }
 
     @Override
-    public void updateUser(int gameID, String username, String color) throws DataAccessException{
+    public int updateUser(int gameID, String username, String color) throws DataAccessException{
         var statement = "";
         try(var conn = DatabaseManager.getConnection()) {
         if(Objects.equals(color, "WHITE")){
@@ -122,7 +122,7 @@ public class SqlGameDao implements GameDao{
                 preparedStatement.setString(1, username);
                 preparedStatement.setInt(2, gameID);
 
-                preparedStatement.executeUpdate();
+                return preparedStatement.executeUpdate();
 
             }
         } catch (SQLException | DataAccessException ex) {
@@ -131,7 +131,7 @@ public class SqlGameDao implements GameDao{
     }
 
     @Override
-    public void updateGame(int gameID, ChessGame chessGame) throws DataAccessException {
+    public int updateGame(int gameID, ChessGame chessGame) throws DataAccessException {
         var statement = "UPDATE GameData SET game = ? where gameID = ?";
 
         String game = gameSerialize(chessGame);
@@ -140,7 +140,7 @@ public class SqlGameDao implements GameDao{
                 preparedStatement.setString(1, game);
                 preparedStatement.setInt(2, gameID);
 
-                preparedStatement.executeUpdate();
+                return preparedStatement.executeUpdate();
 
             }
         } catch (SQLException | DataAccessException ex) {
