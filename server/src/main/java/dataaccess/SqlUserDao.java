@@ -28,7 +28,7 @@ public class SqlUserDao implements UserDao{
 
             }
         } catch (SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to create new user");
+            throw new DataAccessException("Error: unable to create new user");
         }
 
     }
@@ -51,7 +51,7 @@ public class SqlUserDao implements UserDao{
             }
 
         }catch(SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to access database");
+            throw new DataAccessException("Error: unable to access database");
 
         }
         return null;
@@ -67,7 +67,7 @@ public class SqlUserDao implements UserDao{
             }
 
         }catch(SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to clear database");
+            throw new DataAccessException("Error: unable to clear database");
 
         }
 

@@ -55,14 +55,14 @@ public class GameService {
         }
         if(Objects.equals(playerColor, "WHITE")){
             if(gameData.whiteUsername() == null) {
-                gameDao.updateWhiteUser(gameID, auth.username());
+                gameDao.updateUser(gameID, auth.username(), playerColor);
                 return new JoinResult();
             }else{
                 throw new TakenException("Error: already taken");
             }
         }else if(Objects.equals(playerColor, "BLACK")){
             if(gameData.blackUsername() == null) {
-                gameDao.updateBlackUser(gameID, auth.username());
+                gameDao.updateUser(gameID, auth.username(), playerColor);
                 return new JoinResult();
             }else{
                 throw new TakenException("Error: already taken");

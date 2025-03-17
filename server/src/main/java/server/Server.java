@@ -23,21 +23,12 @@ public class Server {
         Spark.put("/game", (req, res) -> (JoinHandler.getInstance().joinHandle(req, res)));
         Spark.delete("/db", (req, res) -> (ClearHandler.getInstance().clearHandle(req, res)));
 
-        Spark.exception(Exception.class, this::errorHandler);
 
 
         Spark.awaitInitialization();
         return Spark.port();
     }
 
-
-    public Object errorHandler(Exception e, Request req, Response res) {
-        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
-        res.type("application/json");
-        res.status(500);
-        res.body(body);
-        return body;
-    }
 
     public void stop() {
         Spark.stop();

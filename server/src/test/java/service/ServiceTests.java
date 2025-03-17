@@ -2,34 +2,49 @@ package service;
 
 import dataaccess.*;
 import model.*;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
 import response.*;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTests {
 
-    private static final MemoryAuthDao AUTH_MEMORY = new MemoryAuthDao();
-    private static final MemoryUserDao USER_MEMORY = new MemoryUserDao();
-    private static final MemoryGameDao GAME_MEMORY = new MemoryGameDao();
+    private static final SqlAuthDao AUTH_MEMORY = new SqlAuthDao();
+    private static final SqlUserDao USER_MEMORY;
+
+    static {
+        try {
+            USER_MEMORY = new SqlUserDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final SqlGameDao GAME_MEMORY = new SqlGameDao();
     private static UserService userService;
     private static GameService gameService;
 
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws DataAccessException {
         AUTH_MEMORY.clear();
         USER_MEMORY.clear();
         GAME_MEMORY.clear();
         userService = new UserService(USER_MEMORY, AUTH_MEMORY);
         gameService = new GameService(AUTH_MEMORY, GAME_MEMORY);
+    }
+    @AfterEach
+    public void tearDown() throws DataAccessException{
+        AUTH_MEMORY.clear();
+        USER_MEMORY.clear();
+        GAME_MEMORY.clear();
     }
 
 
@@ -41,21 +56,21 @@ public class ServiceTests {
         RegisterResult registerResult = userService.register(request);
         String resultName = registerResult.username();
 
-        Assertions.assertEquals("ljreds", resultName);
+        assertEquals("ljreds", resultName);
 
 
 
     }
 
     @Test
-    public void registerNameTaken(){
+    public void registerNameTaken() throws DataAccessException {
         USER_MEMORY.createUser("ljreds", "12345", "kall@gmail.com");
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
 
         Exception ex = assertThrows(Exception.class, () -> userService.register(request));
 
-        Assertions.assertEquals("Error: already taken", ex.getMessage());
+        assertEquals("Error: already taken", ex.getMessage());
 
 
 
@@ -68,7 +83,7 @@ public class ServiceTests {
 
         Exception ex = assertThrows(Exception.class, () -> userService.register(request));
 
-        Assertions.assertEquals("Error: bad request", ex.getMessage());
+        assertEquals("Error: bad request", ex.getMessage());
 
 
 
@@ -83,21 +98,21 @@ public class ServiceTests {
         LoginResult loginResult = userService.login(request);
         String resultName = loginResult.username();
 
-        Assertions.assertEquals("ljreds", resultName);
+        assertEquals("ljreds", resultName);
 
 
 
     }
 
     @Test
-    public void loginBadRequest(){
+    public void loginBadRequest() throws DataAccessException {
         USER_MEMORY.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("", "12345");
 
 
         Exception ex = assertThrows(Exception.class, () -> userService.login(request));
 
-        Assertions.assertEquals("Error: bad request", ex.getMessage());
+        assertEquals("Error: bad request", ex.getMessage());
 
 
 
@@ -105,14 +120,14 @@ public class ServiceTests {
     }
 
     @Test
-    public void loginUnauthorized(){
+    public void loginUnauthorized() throws DataAccessException {
         USER_MEMORY.createUser("ljreds", "12345", "kall@gmail.com");
         LoginRequest request = new LoginRequest("ljreds", "joey221");
 
 
         Exception ex = assertThrows(Exception.class, () -> userService.login(request));
 
-        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+        assertEquals("Error: unauthorized", ex.getMessage());
 
 
 
@@ -128,7 +143,7 @@ public class ServiceTests {
 
         LogoutResult logoutResult = userService.logout(outRequest);
 
-        Assertions.assertEquals(new LogoutResult(""), logoutResult);
+        assertEquals(new LogoutResult(""), logoutResult);
 
     }
 
@@ -140,7 +155,7 @@ public class ServiceTests {
 
         Exception ex = assertThrows(Exception.class, () -> userService.logout(outRequest));
 
-        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+        assertEquals("Error: unauthorized", ex.getMessage());
 
 
 
@@ -156,9 +171,10 @@ public class ServiceTests {
 
         GameResult gameResult = gameService.createGame(outRequest, result.authToken());
         int gameID = gameResult.gameID();
-        Map<Integer,GameData> map = GAME_MEMORY.getGameMemory();
+        GameData gameData = GAME_MEMORY.getGame(gameID);
 
-        Assertions.assertTrue(map.containsKey(gameID));
+        assertEquals(gameID, gameData.gameID());
+        assertEquals("newGame", gameData.gameName());
 
     }
 
@@ -168,7 +184,7 @@ public class ServiceTests {
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, UUID.randomUUID().toString()));
 
-        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+        assertEquals("Error: unauthorized", ex.getMessage());
     }
 
     @Test
@@ -181,7 +197,7 @@ public class ServiceTests {
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, auth.authToken()));
 
-        Assertions.assertEquals("Error: bad request", ex.getMessage());
+        assertEquals("Error: bad request", ex.getMessage());
     }
 
     @Test
@@ -194,7 +210,7 @@ public class ServiceTests {
         ListResult listResult = gameService.listGame(result.authToken());
 
 
-        Assertions.assertEquals(new ListResult(list), listResult);
+        assertEquals(new ListResult(list), listResult);
 
 
 
@@ -204,7 +220,7 @@ public class ServiceTests {
     public void listGameUnauthorized(){
         Exception ex = assertThrows(Exception.class, () -> gameService.listGame(UUID.randomUUID().toString()));
 
-        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+        assertEquals("Error: unauthorized", ex.getMessage());
     }
 
     @Test
@@ -217,7 +233,7 @@ public class ServiceTests {
         gameService.joinGame(new JoinRequest("WHITE", gameResult.gameID()), regResult.authToken());
         GameData gameData = GAME_MEMORY.getGame(gameResult.gameID());
 
-        Assertions.assertEquals("ljreds", gameData.whiteUsername());
+        assertEquals("ljreds", gameData.whiteUsername());
 
 
     }
@@ -231,7 +247,7 @@ public class ServiceTests {
 
         Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), regResult.authToken()));
 
-        Assertions.assertEquals("Error: bad request", ex.getMessage());
+        assertEquals("Error: bad request", ex.getMessage());
 
 
     }
@@ -247,7 +263,7 @@ public class ServiceTests {
 
         Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), authToken));
 
-        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+        assertEquals("Error: unauthorized", ex.getMessage());
 
 
     }
@@ -263,7 +279,7 @@ public class ServiceTests {
 
         service.clear();
 
-        Assertions.assertEquals(0, GAME_MEMORY.listGames().size());
+        assertEquals(0, GAME_MEMORY.listGames().size());
 
 
 

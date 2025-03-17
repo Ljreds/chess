@@ -4,16 +4,12 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.GameData;
-import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class SqlGameDao implements GameDao{
@@ -38,7 +34,7 @@ public class SqlGameDao implements GameDao{
 
             }
         } catch (SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to create new user");
+            throw new DataAccessException("Error: unable to create new game");
         }
     }
 
@@ -66,7 +62,7 @@ public class SqlGameDao implements GameDao{
             }
 
         }catch(SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to access database");
+            throw new DataAccessException("Error: unable to access database");
 
         }
         return null;
@@ -90,7 +86,7 @@ public class SqlGameDao implements GameDao{
             }
 
         }catch(SQLException | DataAccessException ex) {
-            throw new DataAccessException("unable to access database");
+            throw new DataAccessException("Error: unable to access database");
 
         }
     }
@@ -108,28 +104,64 @@ public class SqlGameDao implements GameDao{
                 return new GameData(gameId, white, black, name, chess);
 
         } catch(SQLException ex) {
-            throw new DataAccessException("unable to access database");
+            throw new DataAccessException("Error: unable to access database");
         }
 
     }
 
     @Override
-    public void updateBlackUser(int gameID, String blackUsername) {
+    public void updateUser(int gameID, String username, String color) throws DataAccessException{
+        var statement = "";
+        try(var conn = DatabaseManager.getConnection()) {
+        if(Objects.equals(color, "WHITE")){
+           statement = "UPDATE GameData SET whiteUsername = ? where gameID = ?";
+        }else{
+            statement = "UPDATE GameData SET blackUsername = ? where gameID = ?";
+        }
+            try(var preparedStatement = conn.prepareStatement(statement)){
+                preparedStatement.setString(1, username);
+                preparedStatement.setInt(2, gameID);
 
+                preparedStatement.executeUpdate();
+
+            }
+        } catch (SQLException | DataAccessException ex) {
+            throw new DataAccessException("Error: unable to update user");
+        }
     }
 
     @Override
-    public void updateWhiteUser(int gameID, String whiteUsername) {
+    public void updateGame(int gameID, ChessGame chessGame) throws DataAccessException {
+        var statement = "UPDATE GameData SET game = ? where gameID = ?";
 
+        String game = gameSerialize(chessGame);
+        try(var conn = DatabaseManager.getConnection()) {
+            try(var preparedStatement = conn.prepareStatement(statement)){
+                preparedStatement.setString(1, game);
+                preparedStatement.setInt(2, gameID);
+
+                preparedStatement.executeUpdate();
+
+            }
+        } catch (SQLException | DataAccessException ex) {
+            throw new DataAccessException("Error: unable to update user");
+        }
     }
 
-    @Override
-    public void updateGame(int gameID, ChessGame game) {
-
-    }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE TABLE GameData";
+        try(var conn = DatabaseManager.getConnection()){
+            try(PreparedStatement stmt = conn.prepareStatement(statement)){
+                stmt.executeUpdate();
+
+            }
+
+        }catch(SQLException | DataAccessException ex) {
+            throw new DataAccessException("unable to clear database");
+
+        }
 
     }
 

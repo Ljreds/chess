@@ -19,7 +19,7 @@ public class RegisterHandler extends Handler<RegisterRequest>{
        RegisterRequest regBody = getBody(request, RegisterRequest.class);
        try {
 
-           RegisterResult result = service.register(regBody);
+           RegisterResult result = userService.register(regBody);
 
            response.type("application/json");
            response.status(200);

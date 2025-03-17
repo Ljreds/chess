@@ -25,10 +25,6 @@ public class MemoryGameDao implements GameDao{
         return gameMemory.get(gameID);
     }
 
-    public Map<Integer, GameData> getGameMemory() {
-        return gameMemory;
-    }
-
     @Override
     public Collection<GameData> listGames() {
         return gameMemory.values();
@@ -36,17 +32,14 @@ public class MemoryGameDao implements GameDao{
 
 
     @Override
-    public void updateBlackUser(int gameID, String blackUsername) {
+    public void updateUser(int gameID, String username, String color) {
         GameData gameData = gameMemory.get(gameID);
-        GameData newGame = gameData.blackJoin(blackUsername);
-        gameMemory.put(gameID, newGame);
-
-    }
-
-    @Override
-    public void updateWhiteUser(int gameID, String whiteUsername) {
-        GameData gameData = gameMemory.get(gameID);
-        GameData newGame = gameData.whiteJoin(whiteUsername);
+        GameData newGame;
+        if(Objects.equals(color, "WHITE")){
+            newGame = gameData.blackJoin(username);
+        }else{
+            newGame = gameData.whiteJoin(username);
+        }
         gameMemory.put(gameID, newGame);
 
     }

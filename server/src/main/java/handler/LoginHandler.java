@@ -18,7 +18,7 @@ public class LoginHandler extends Handler<LoginRequest>{
     public Object loginHandle(Request request, Response response) {
        LoginRequest body = getBody(request, LoginRequest.class);
        try {
-           LoginResult result = service.login(body);
+           LoginResult result = userService.login(body);
 
            response.type("application/json");
            response.status(200);

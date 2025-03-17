@@ -1,12 +1,17 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.*;
 import org.mindrot.jbcrypt.BCrypt;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +20,8 @@ public class DataAccessTests {
     private final SqlAuthDao AUTH_DAO = SqlAuthDao.getInstance();
     private final SqlGameDao GAME_DAO = SqlGameDao.getInstance();
     private static String testAuth;
+    private static int testGameID;
+
 
     public DataAccessTests() throws DataAccessException {
     }
@@ -24,6 +31,7 @@ public class DataAccessTests {
     public void setup() throws DataAccessException {
         USER_DAO.createUser("testUser", "hello1", "test@test.com");
         testAuth = AUTH_DAO.createAuth("testUser");
+        testGameID = GAME_DAO.createGame("testGame");
     }
 
     @AfterEach
@@ -133,5 +141,76 @@ public class DataAccessTests {
         assertEquals(0, numDeleted);
     }
 
+    @Test
+    public void createGameSuccess() throws DataAccessException {
+        int gameId = GAME_DAO.createGame("Joel");
+
+        GameData answer = GAME_DAO.getGame(gameId);
+
+
+        assertEquals(gameId, answer.gameID());
+        assertNull(answer.whiteUsername());
+        assertNull(answer.blackUsername());
+        assertEquals("Joel", answer.gameName());
+        assertNotNull(answer.game());
+
+
+    }
+
+    @Test
+    public void createGameFailure() {
+
+        Exception ex = assertThrows(Exception.class, () -> GAME_DAO.createGame(null));
+
+        Assertions.assertEquals("Error: unable to create new game", ex.getMessage());
+
+
+    }
+
+    @Test
+    public void getGameSuccess() throws DataAccessException{
+        GameData answer = GAME_DAO.getGame(testGameID);
+
+        assertEquals(testGameID, answer.gameID());
+        assertNull(answer.whiteUsername());
+        assertNull(answer.blackUsername());
+        assertEquals("testGame", answer.gameName());
+        assertNotNull(answer.game());
+
+    }
+
+    @Test
+    public void getGameFailure() throws DataAccessException{
+        GameData answer = GAME_DAO.getGame(191);
+
+        assertNull(answer);
+    }
+
+    @Test
+    public void listGameSuccess() throws DataAccessException{
+        Collection<GameData> answer = GAME_DAO.listGames();
+
+       assertNotNull(answer);
+
+    }
+
+    @Test
+    public void listGameFailure() throws DataAccessException{
+        GAME_DAO.clear();
+        Collection<GameData> answer = GAME_DAO.listGames();
+        Collection<GameData> expected = new ArrayList<>();
+        assertEquals(expected, answer);
+
+    }
+
+    @Test
+    public void updateUserSuccess() throws DataAccessException{
+        GAME_DAO.updateUser(testGameID, "testUser", "WHITE");
+
+        GameData answer = GAME_DAO.getGame(testGameID);
+
+        assertEquals("testUser", answer.whiteUsername());
+
+    }
 
 }

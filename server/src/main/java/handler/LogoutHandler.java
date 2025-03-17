@@ -20,7 +20,7 @@ public class LogoutHandler extends Handler<LogoutRequest>{
        String auth = getAuth(request);
        LogoutRequest logoutRequest = new LogoutRequest(auth);
        try {
-           LogoutResult result = service.logout(logoutRequest);
+           LogoutResult result = userService.logout(logoutRequest);
 
            response.type("application/json");
            response.status(200);
@@ -30,7 +30,9 @@ public class LogoutHandler extends Handler<LogoutRequest>{
            response.status(401);
            return gson.toJson(new ErrorResult(ex.getMessage()));
        } catch (DataAccessException ex) {
-           throw new DataAccessException(ex.getMessage());
+           response.type("application/json");
+           response.status(500);
+           return gson.toJson(new ErrorResult(ex.getMessage()));
        }
 
     }
