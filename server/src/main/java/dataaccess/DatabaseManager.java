@@ -70,31 +70,4 @@ public class DatabaseManager {
         }
     }
 
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  UserData (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              `email` varchar(256),
-              PRIMARY KEY (`username`)
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS  AuthData (
-              `authToken` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`)
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS  AuthData (
-              `authToken` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`)
-            )
-            """,
-
-    };
-
 }

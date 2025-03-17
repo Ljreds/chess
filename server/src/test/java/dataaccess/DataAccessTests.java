@@ -16,9 +16,9 @@ import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DataAccessTests {
-    private final SqlUserDao USER_DAO = SqlUserDao.getInstance();
-    private final SqlAuthDao AUTH_DAO = SqlAuthDao.getInstance();
-    private final SqlGameDao GAME_DAO = SqlGameDao.getInstance();
+    private final SqlUserDao userDao = SqlUserDao.getInstance();
+    private final SqlAuthDao authDao = SqlAuthDao.getInstance();
+    private final SqlGameDao gameDao = SqlGameDao.getInstance();
     private static String testAuth;
     private static int testGameID;
 
@@ -30,24 +30,24 @@ public class DataAccessTests {
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        USER_DAO.createUser("testUser", "hello1", "test@test.com");
-        testAuth = AUTH_DAO.createAuth("testUser");
-        testGameID = GAME_DAO.createGame("testGame");
+        userDao.createUser("testUser", "hello1", "test@test.com");
+        testAuth = authDao.createAuth("testUser");
+        testGameID = gameDao.createGame("testGame");
     }
 
     @AfterEach
     public void tearDown() throws DataAccessException{
-        AUTH_DAO.clear();
-        USER_DAO.clear();
-        GAME_DAO.clear();
+        authDao.clear();
+        userDao.clear();
+        gameDao.clear();
     }
 
 
     @Test
     public void createUserSuccess() throws DataAccessException {
-        USER_DAO.createUser("ljreds", "12345", "example@example.com");
+        userDao.createUser("ljreds", "12345", "example@example.com");
 
-        UserData answer = USER_DAO.getUser("ljreds");
+        UserData answer = userDao.getUser("ljreds");
 
 
        assertEquals("ljreds", answer.username());
@@ -59,7 +59,7 @@ public class DataAccessTests {
     @Test
     public void createUserFailure() {
 
-        Exception ex = assertThrows(Exception.class, () -> USER_DAO.createUser("testUser", "12345", "example@example.com"));
+        Exception ex = assertThrows(Exception.class, () -> userDao.createUser("testUser", "12345", "example@example.com"));
 
         Assertions.assertEquals("Error: unable to create new user", ex.getMessage());
 
@@ -68,7 +68,7 @@ public class DataAccessTests {
 
     @Test
     public void getUserSuccess() throws DataAccessException {
-        UserData answer = USER_DAO.getUser("testUser");
+        UserData answer = userDao.getUser("testUser");
 
         assertEquals("testUser", answer.username());
         assertTrue(BCrypt.checkpw("hello1", answer.password()));
@@ -78,7 +78,7 @@ public class DataAccessTests {
 
     @Test
     public void getUserFailure() throws DataAccessException {
-        UserData answer = USER_DAO.getUser("test");
+        UserData answer = userDao.getUser("test");
 
         assertNull(answer);
 
@@ -86,9 +86,9 @@ public class DataAccessTests {
 
     @Test
     public void createAuthSuccess() throws DataAccessException {
-        String authToken = AUTH_DAO.createAuth("ljreds");
+        String authToken = authDao.createAuth("ljreds");
 
-        AuthData answer = AUTH_DAO.getAuth(authToken);
+        AuthData answer = authDao.getAuth(authToken);
 
         AuthData expected = new AuthData(authToken,"ljreds");
 
@@ -99,7 +99,7 @@ public class DataAccessTests {
     @Test
     public void createAuthFailure() {
 
-        Exception ex = assertThrows(Exception.class, () -> AUTH_DAO.createAuth(null));
+        Exception ex = assertThrows(Exception.class, () -> authDao.createAuth(null));
 
         Assertions.assertEquals("Error: unable to create new authToken", ex.getMessage());
 
@@ -108,7 +108,7 @@ public class DataAccessTests {
 
     @Test
     public void getAuthSuccess() throws DataAccessException {
-        AuthData answer = AUTH_DAO.getAuth(testAuth);
+        AuthData answer = authDao.getAuth(testAuth);
 
         AuthData expected = new AuthData(testAuth, "testUser");
 
@@ -118,7 +118,7 @@ public class DataAccessTests {
 
     @Test
     public void getAuthFailure() throws DataAccessException {
-        AuthData answer = AUTH_DAO.getAuth("test");
+        AuthData answer = authDao.getAuth("test");
 
         assertNull(answer);
 
@@ -126,9 +126,9 @@ public class DataAccessTests {
 
     @Test
     public void deleteAuthSuccess() throws DataAccessException{
-        int numDeleted = AUTH_DAO.deleteAuth(testAuth);
+        int numDeleted = authDao.deleteAuth(testAuth);
 
-        AuthData answer = AUTH_DAO.getAuth("testUser");
+        AuthData answer = authDao.getAuth("testUser");
 
         assertNull(answer);
         assertEquals(1, numDeleted);
@@ -137,16 +137,16 @@ public class DataAccessTests {
 
     @Test
     public void deleteAuthFailure() throws DataAccessException {
-        int numDeleted = AUTH_DAO.deleteAuth("test");
+        int numDeleted = authDao.deleteAuth("test");
 
         assertEquals(0, numDeleted);
     }
 
     @Test
     public void createGameSuccess() throws DataAccessException {
-        int gameId = GAME_DAO.createGame("Joel");
+        int gameId = gameDao.createGame("Joel");
 
-        GameData answer = GAME_DAO.getGame(gameId);
+        GameData answer = gameDao.getGame(gameId);
 
 
         assertEquals(gameId, answer.gameID());
@@ -161,7 +161,7 @@ public class DataAccessTests {
     @Test
     public void createGameFailure() {
 
-        Exception ex = assertThrows(Exception.class, () -> GAME_DAO.createGame(null));
+        Exception ex = assertThrows(Exception.class, () -> gameDao.createGame(null));
 
         Assertions.assertEquals("Error: unable to create new game", ex.getMessage());
 
@@ -170,7 +170,7 @@ public class DataAccessTests {
 
     @Test
     public void getGameSuccess() throws DataAccessException{
-        GameData answer = GAME_DAO.getGame(testGameID);
+        GameData answer = gameDao.getGame(testGameID);
 
         assertEquals(testGameID, answer.gameID());
         assertNull(answer.whiteUsername());
@@ -182,14 +182,14 @@ public class DataAccessTests {
 
     @Test
     public void getGameFailure() throws DataAccessException{
-        GameData answer = GAME_DAO.getGame(191);
+        GameData answer = gameDao.getGame(191);
 
         assertNull(answer);
     }
 
     @Test
     public void listGameSuccess() throws DataAccessException{
-        Collection<GameData> answer = GAME_DAO.listGames();
+        Collection<GameData> answer = gameDao.listGames();
 
        assertNotNull(answer);
 
@@ -197,8 +197,8 @@ public class DataAccessTests {
 
     @Test
     public void listGameFailure() throws DataAccessException{
-        GAME_DAO.clear();
-        Collection<GameData> answer = GAME_DAO.listGames();
+        gameDao.clear();
+        Collection<GameData> answer = gameDao.listGames();
         Collection<GameData> expected = new ArrayList<>();
         assertEquals(expected, answer);
 
@@ -206,9 +206,9 @@ public class DataAccessTests {
 
     @Test
     public void updateUserSuccessWhite() throws DataAccessException{
-        GAME_DAO.updateUser(testGameID, "testUser", "WHITE");
+        gameDao.updateUser(testGameID, "testUser", "WHITE");
 
-        GameData answer = GAME_DAO.getGame(testGameID);
+        GameData answer = gameDao.getGame(testGameID);
 
         assertEquals("testUser", answer.whiteUsername());
 
@@ -216,9 +216,9 @@ public class DataAccessTests {
 
     @Test
     public void updateUserSuccessBlack() throws DataAccessException{
-        GAME_DAO.updateUser(testGameID, "testUser", "BLACK");
+        gameDao.updateUser(testGameID, "testUser", "BLACK");
 
-        GameData answer = GAME_DAO.getGame(testGameID);
+        GameData answer = gameDao.getGame(testGameID);
 
         assertEquals("testUser", answer.blackUsername());
 
@@ -226,7 +226,7 @@ public class DataAccessTests {
 
     @Test
     public void updateUserFailure() throws DataAccessException{
-        int answer = GAME_DAO.updateUser(121, "testUser", "BLACK");
+        int answer = gameDao.updateUser(121, "testUser", "BLACK");
 
         assertEquals(0, answer);
 
@@ -236,9 +236,9 @@ public class DataAccessTests {
     @Test
     public void updateGameSuccess() throws DataAccessException{
         ChessGame chess = new ChessGame();
-        GAME_DAO.updateGame(testGameID, chess);
+        gameDao.updateGame(testGameID, chess);
 
-        GameData answer = GAME_DAO.getGame(testGameID);
+        GameData answer = gameDao.getGame(testGameID);
 
         assertEquals(chess, answer.game());
 
@@ -248,7 +248,7 @@ public class DataAccessTests {
     public void updateGameFailure() throws DataAccessException{
         ChessGame chess = new ChessGame();
 
-        int answer = GAME_DAO.updateGame(1234, chess);
+        int answer = gameDao.updateGame(1234, chess);
 
         assertEquals(0, answer);
 
@@ -256,27 +256,27 @@ public class DataAccessTests {
 
     @Test
     public void userClear() throws DataAccessException{
-        USER_DAO.clear();
+        userDao.clear();
 
-        UserData answer = USER_DAO.getUser("testUser");
+        UserData answer = userDao.getUser("testUser");
 
         assertNull(answer);
     }
 
     @Test
     public void gameClear() throws DataAccessException{
-        GAME_DAO.clear();
+        gameDao.clear();
 
-        GameData answer = GAME_DAO.getGame(testGameID);
+        GameData answer = gameDao.getGame(testGameID);
 
         assertNull(answer);
     }
 
     @Test
     public void authClear() throws DataAccessException{
-        AUTH_DAO.clear();
+        authDao.clear();
 
-        AuthData answer = AUTH_DAO.getAuth(testAuth);
+        AuthData answer = authDao.getAuth(testAuth);
 
         assertNull(answer);
     }
