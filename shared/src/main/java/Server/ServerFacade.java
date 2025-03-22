@@ -39,6 +39,12 @@ public class ServerFacade {
         return makeRequest("POST", path, request, GameResult.class);
     }
 
+    public JoinResult joinGame(JoinRequest request) throws ResponseException {
+        authToken = request.authToken();
+        var path = "/game";
+        return makeRequest("PUT", path, request, JoinResult.class);
+    }
+
 
 
 

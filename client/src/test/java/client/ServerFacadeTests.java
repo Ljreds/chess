@@ -16,6 +16,8 @@ public class ServerFacadeTests {
     private static Server server;
     static ServerFacade facade;
     private String authToken;
+    private int gameId;
+
 
     @BeforeAll
     public static void init() {
@@ -34,6 +36,7 @@ public class ServerFacadeTests {
     public void setUp() throws DataAccessException {
         SqlUserDao.getInstance().createUser("testUser", "testPassword", "test@test.com");
         authToken = SqlAuthDao.getInstance().createAuth("testUser");
+        gameId = SqlGameDao.getInstance().createGame("testGame");
 
     }
 
@@ -105,6 +108,22 @@ public class ServerFacadeTests {
 
         Exception ex = assertThrows(Exception.class, () -> facade.createGame(request));
         assertEquals("Error: unauthorized", ex.getMessage());
+    }
+
+    @Test
+    public void joinGameSuccess() throws ResponseException {
+        JoinRequest request = new JoinRequest("WHITE", gameId, authToken);
+        JoinResult result = facade.joinGame(request);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void joinGameFailure() {
+        JoinRequest request = new JoinRequest("WHITE", 12, authToken);
+
+        Exception ex = assertThrows(Exception.class, () -> facade.joinGame(request));
+        assertEquals("Error: bad request", ex.getMessage());
     }
 
 }
