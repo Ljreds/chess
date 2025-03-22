@@ -15,6 +15,7 @@ public class ServerFacadeTests {
 
     private static Server server;
     static ServerFacade facade;
+    private String authToken;
 
     @BeforeAll
     public static void init() {
@@ -32,6 +33,8 @@ public class ServerFacadeTests {
     @BeforeEach
     public void setUp() throws DataAccessException {
         SqlUserDao.getInstance().createUser("testUser", "testPassword", "test@test.com");
+        authToken = SqlAuthDao.getInstance().createAuth("testUser");
+
     }
 
     @AfterEach
@@ -75,16 +78,16 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutSuccess() throws ResponseException {
-        LoginRequest request = new LoginRequest("testUser", "testPassword");
-        LoginResult result = facade.login(request);
+        LogoutRequest request = new LogoutRequest(authToken);
+        LogoutResult result = facade.logout(request);
 
-        assertTrue(result.authToken().length() > 10);
+        assertNotNull(result);
     }
 
     @Test
     public void logoutFailure() {
-        LoginRequest request = new LoginRequest("testUser", "12345");
-        Exception ex = assertThrows(Exception.class, () -> facade.login(request));
+        LogoutRequest request = new LogoutRequest(null);
+        Exception ex = assertThrows(Exception.class, () -> facade.logout(request));
         assertEquals("Error: unauthorized", ex.getMessage());
     }
 

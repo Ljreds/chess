@@ -5,11 +5,13 @@ import request.*;
 import response.*;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.*;
 
 public class ServerFacade {
 
     private final String serverUrl;
+    private static String authToken;
 
     public ServerFacade(String url){
         this.serverUrl = url;
@@ -25,6 +27,12 @@ public class ServerFacade {
         return makeRequest("POST", path, request, LoginResult.class);
     }
 
+    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+        authToken = request.authToken();
+        var path = "/session";
+        return makeRequest("DELETE", path, request, LogoutResult.class);
+    }
+
 
 
 
@@ -38,6 +46,7 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
 
             writeBody(request, http);
             http.connect();
@@ -64,6 +73,9 @@ public class ServerFacade {
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if(request != null){
             http.addRequestProperty("Content-Type", "application/json");
+            if(hasAuthToken(request)){
+                http.setRequestProperty("Authorization", authToken);
+            }
             var body = new Gson().toJson(request);
             try(var outputStream = http.getOutputStream()){
                 outputStream.write(body.getBytes());
@@ -88,6 +100,16 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+
+    private static boolean hasAuthToken(Object request){
+        try{
+            request.getClass().getDeclaredField("authToken");
+            return true;
+        } catch (NoSuchFieldException ex) {
+            return false;
+        }
     }
 
 }
