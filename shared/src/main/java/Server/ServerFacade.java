@@ -5,7 +5,6 @@ import request.*;
 import response.*;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.*;
 
 public class ServerFacade {
@@ -45,6 +44,12 @@ public class ServerFacade {
         return makeRequest("PUT", path, request, JoinResult.class);
     }
 
+    public ListResult listGame(ListRequest request) throws ResponseException {
+        authToken = request.authToken();
+        var path = "/game";
+        return makeRequest("GET", path, request, ListResult.class);
+    }
+
 
 
 
@@ -58,7 +63,6 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
 
             writeBody(request, http);
             http.connect();
@@ -86,7 +90,10 @@ public class ServerFacade {
         if(request != null){
             http.addRequestProperty("Content-Type", "application/json");
             if(hasAuthToken(request)){
-                http.setRequestProperty("Authorization", authToken);
+                http.addRequestProperty("Authorization", authToken);
+            }
+            if(http.getRequestMethod().equals("GET")){
+                return;
             }
             var body = new Gson().toJson(request);
             try(var outputStream = http.getOutputStream()){

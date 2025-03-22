@@ -1,12 +1,17 @@
 package client;
 
+import chess.ChessGame;
 import dataaccess.*;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import request.*;
 import response.*;
 import server.Server;
 import Server.*;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -125,5 +130,25 @@ public class ServerFacadeTests {
         Exception ex = assertThrows(Exception.class, () -> facade.joinGame(request));
         assertEquals("Error: bad request", ex.getMessage());
     }
+
+    @Test
+    public void listGameSuccess() throws ResponseException {
+        ListRequest request = new ListRequest(authToken);
+        ListResult result = facade.listGame(request);
+
+        Collection<GameData> list = new ArrayList<>();
+        list.add(new GameData(gameId, null, null, "testGame", new ChessGame()));
+
+        assertEquals(list, result.games());
+    }
+
+    @Test
+    public void listGameFailure() {
+        ListRequest request = new ListRequest("1212131");
+
+        Exception ex = assertThrows(Exception.class, () -> facade.listGame(request));
+        assertEquals("Error: unauthorized", ex.getMessage());
+    }
+
 
 }

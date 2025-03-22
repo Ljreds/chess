@@ -24,7 +24,7 @@ public class GameService {
         if(auth == null){
             throw new UnauthorizedException("Error: unauthorized");
         }
-        if(name.isEmpty()){
+        if(name == null){
             throw new RequestException("Error: bad request");
         }
         int gameId = gameDao.createGame(name);
