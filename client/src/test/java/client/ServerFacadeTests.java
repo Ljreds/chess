@@ -2,8 +2,8 @@ package client;
 
 import dataaccess.*;
 import org.junit.jupiter.api.*;
-import request.RegisterRequest;
-import response.RegisterResult;
+import request.*;
+import response.*;
 import server.Server;
 import Server.*;
 
@@ -29,6 +29,11 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @BeforeEach
+    public void setUp() throws DataAccessException {
+        SqlUserDao.getInstance().createUser("testUser", "testPassword", "test@test.com");
+    }
+
     @AfterEach
     public void tearDown() throws DataAccessException {
         SqlAuthDao.getInstance().clear();
@@ -40,17 +45,47 @@ public class ServerFacadeTests {
 
     @Test
     public void registerSuccess() throws ResponseException {
-        RegisterRequest request = new RegisterRequest("testUser", "12345", "joe@byu.edu");
+        RegisterRequest request = new RegisterRequest("joe_bob", "12345", "joe@byu.edu");
         RegisterResult result = facade.register(request);
 
         assertTrue(result.authToken().length() > 10);
     }
 
     @Test
-    public void registerFailure() throws ResponseException {
+    public void registerFailure(){
         RegisterRequest request = new RegisterRequest(null, "12345", "joe@byu.edu");
         Exception ex = assertThrows(Exception.class, () -> facade.register(request));
         assertEquals("Error: bad request", ex.getMessage());
+    }
+
+    @Test
+    public void loginSuccess() throws ResponseException {
+        LoginRequest request = new LoginRequest("testUser", "testPassword");
+        LoginResult result = facade.login(request);
+
+        assertTrue(result.authToken().length() > 10);
+    }
+
+    @Test
+    public void loginFailure() {
+        LoginRequest request = new LoginRequest("testUser", "12345");
+        Exception ex = assertThrows(Exception.class, () -> facade.login(request));
+        assertEquals("Error: unauthorized", ex.getMessage());
+    }
+
+    @Test
+    public void logoutSuccess() throws ResponseException {
+        LoginRequest request = new LoginRequest("testUser", "testPassword");
+        LoginResult result = facade.login(request);
+
+        assertTrue(result.authToken().length() > 10);
+    }
+
+    @Test
+    public void logoutFailure() {
+        LoginRequest request = new LoginRequest("testUser", "12345");
+        Exception ex = assertThrows(Exception.class, () -> facade.login(request));
+        assertEquals("Error: unauthorized", ex.getMessage());
     }
 
 }

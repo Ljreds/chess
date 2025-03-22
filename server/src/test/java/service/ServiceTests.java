@@ -107,7 +107,7 @@ public class ServiceTests {
     @Test
     public void loginBadRequest() throws DataAccessException {
         USER_MEMORY.createUser("ljreds", "12345", "kall@gmail.com");
-        LoginRequest request = new LoginRequest("", "12345");
+        LoginRequest request = new LoginRequest(null, "12345");
 
 
         Exception ex = assertThrows(Exception.class, () -> userService.login(request));

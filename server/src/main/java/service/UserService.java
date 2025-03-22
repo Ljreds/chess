@@ -38,7 +38,7 @@ public class UserService {
         String user = loginRequest.username();
         String password = loginRequest.password();
         UserData userData = userDao.getUser(user);
-        if(user.isEmpty()||password.isEmpty()){
+        if(user == null || password == null){
             throw new RequestException("Error: bad request");
         }
         else if(userData != null){

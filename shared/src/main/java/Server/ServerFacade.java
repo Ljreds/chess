@@ -1,8 +1,8 @@
 package Server;
 
 import com.google.gson.Gson;
-import request.RegisterRequest;
-import response.RegisterResult;
+import request.*;
+import response.*;
 
 import java.io.*;
 import java.net.*;
@@ -19,6 +19,12 @@ public class ServerFacade {
         var path = "/user";
         return makeRequest("POST", path, request, RegisterResult.class);
     }
+
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        var path = "/session";
+        return makeRequest("POST", path, request, LoginResult.class);
+    }
+
 
 
 
