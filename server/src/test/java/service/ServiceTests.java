@@ -167,7 +167,7 @@ public class ServiceTests {
         RegisterRequest request = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
 
         RegisterResult result = userService.register(request);
-        GameRequest outRequest = new GameRequest("newGame");
+        GameRequest outRequest = new GameRequest("newGame", result.authToken());
 
         GameResult gameResult = gameService.createGame(outRequest, result.authToken());
         int gameID = gameResult.gameID();
@@ -180,7 +180,7 @@ public class ServiceTests {
 
     @Test
     public void createGameUnauthorized(){
-        GameRequest outRequest = new GameRequest("newGame");
+        GameRequest outRequest = new GameRequest("newGame", UUID.randomUUID().toString());
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, UUID.randomUUID().toString()));
 
@@ -193,7 +193,7 @@ public class ServiceTests {
 
         RegisterResult regResult = userService.register(request);
         AuthData auth = AUTH_MEMORY.getAuth(regResult.authToken());
-        GameRequest outRequest = new GameRequest("");
+        GameRequest outRequest = new GameRequest("", regResult.authToken());
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, auth.authToken()));
 
@@ -228,9 +228,9 @@ public class ServiceTests {
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
 
-        GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
+        GameResult gameResult = gameService.createGame(new GameRequest("game1", regResult.authToken()), regResult.authToken());
 
-        gameService.joinGame(new JoinRequest("WHITE", gameResult.gameID()), regResult.authToken());
+        gameService.joinGame(new JoinRequest("WHITE", gameResult.gameID(), regResult.authToken()), regResult.authToken());
         GameData gameData = GAME_MEMORY.getGame(gameResult.gameID());
 
         assertEquals("ljreds", gameData.whiteUsername());
@@ -243,9 +243,9 @@ public class ServiceTests {
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
 
-        GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
+        GameResult gameResult = gameService.createGame(new GameRequest("game1", regResult.authToken()), regResult.authToken());
 
-        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), regResult.authToken()));
+        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID(), regResult.authToken()), regResult.authToken()));
 
         assertEquals("Error: bad request", ex.getMessage());
 
@@ -257,11 +257,11 @@ public class ServiceTests {
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
 
-        GameResult gameResult = gameService.createGame(new GameRequest("game1"), regResult.authToken());
+        GameResult gameResult = gameService.createGame(new GameRequest("game1", regResult.authToken()), regResult.authToken());
 
         String authToken =  UUID.randomUUID().toString();
 
-        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID()), authToken));
+        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID(), regResult.authToken()), authToken));
 
         assertEquals("Error: unauthorized", ex.getMessage());
 
@@ -273,7 +273,7 @@ public class ServiceTests {
         RegisterRequest regRequest = new RegisterRequest("ljreds", "12345", "JollyGoodFellow@gmail.com");
         RegisterResult regResult = userService.register(regRequest);
 
-        gameService.createGame(new GameRequest("game1"), regResult.authToken());
+        gameService.createGame(new GameRequest("game1", regResult.authToken()), regResult.authToken());
 
         ClearService service = new ClearService(USER_MEMORY, AUTH_MEMORY, GAME_MEMORY);
 

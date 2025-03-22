@@ -33,6 +33,12 @@ public class ServerFacade {
         return makeRequest("DELETE", path, request, LogoutResult.class);
     }
 
+    public GameResult createGame(GameRequest request) throws ResponseException {
+        authToken = request.authToken();
+        var path = "/game";
+        return makeRequest("POST", path, request, GameResult.class);
+    }
+
 
 
 

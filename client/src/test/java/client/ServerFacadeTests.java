@@ -91,4 +91,20 @@ public class ServerFacadeTests {
         assertEquals("Error: unauthorized", ex.getMessage());
     }
 
+    @Test
+    public void createGameSuccess() throws ResponseException {
+        GameRequest request = new GameRequest("newGame", authToken);
+        GameResult result = facade.createGame(request);
+
+        assertInstanceOf(Integer.class, result.gameID());
+    }
+
+    @Test
+    public void createGameFailure() {
+        GameRequest request = new GameRequest("newGame", "1213112");
+
+        Exception ex = assertThrows(Exception.class, () -> facade.createGame(request));
+        assertEquals("Error: unauthorized", ex.getMessage());
+    }
+
 }
