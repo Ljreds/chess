@@ -1,6 +1,8 @@
 package Server;
 
 import com.google.gson.Gson;
+import request.RegisterRequest;
+import response.RegisterResult;
 
 import java.io.*;
 import java.net.*;
@@ -11,6 +13,11 @@ public class ServerFacade {
 
     public ServerFacade(String url){
         this.serverUrl = url;
+    }
+
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
+        var path = "/user";
+        return makeRequest("POST", path, request, RegisterResult.class);
     }
 
 
@@ -40,11 +47,11 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
+                    throw ResponseException.fromJson(status, respErr);
                 }
             }
 
-            throw new ResponseException(status, "other failure: " + status);
+            throw new ResponseException(status, "Error:" + status);
         }
     }
 
@@ -61,7 +68,15 @@ public class ServerFacade {
 
     private static <T> T readBody(HttpURLConnection http, Class<T> resultClass) throws IOException{
         T result = null;
-
+        if (http.getContentLength() < 0) {
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader reader = new InputStreamReader(respBody);
+                if (resultClass != null) {
+                    result = new Gson().fromJson(reader, resultClass);
+                }
+            }
+        }
+        return result;
     }
 
 
