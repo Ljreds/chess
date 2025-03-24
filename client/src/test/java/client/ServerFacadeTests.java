@@ -86,10 +86,13 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutSuccess() throws ResponseException {
-        LogoutRequest request = new LogoutRequest(authToken);
-        LogoutResult result = facade.logout(request);
+        LoginRequest request = new LoginRequest("testUser", "testPassword");
+        LoginResult result = facade.login(request);
 
-        assertNotNull(result);
+        LogoutRequest logoutRequest = new LogoutRequest(result.authToken());
+        LogoutResult logoutResult = facade.logout(logoutRequest);
+
+        assertNotNull(logoutResult);
     }
 
     @Test

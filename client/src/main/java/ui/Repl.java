@@ -31,6 +31,8 @@ public class Repl {
                 if(client.getState() == State.SIGNEDIN){
                     client = new PostLoginClient(serverUrl);
                     System.out.print(SET_TEXT_COLOR_BLUE + client.help());
+                }else{
+                    client = new PreLoginClient(serverUrl);
                 }
             }catch(Throwable ex) {
                 var msg = ex.toString();

@@ -52,6 +52,7 @@ public class PreLoginClient extends Client {
         LoginRequest request = new LoginRequest(params[0], params[1]);
         LoginResult result = server.login(request);
         authToken = result.authToken();
+        System.out.println(authToken);
         state = SIGNEDIN;
         return "You are now signed in has: " + result.username();
 

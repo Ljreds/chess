@@ -5,7 +5,7 @@ import Server.ServerFacade;
 import static ui.State.SIGNEDOUT;
 
 public class Client {
-    protected String authToken;
+    protected static String authToken;
     protected ServerFacade server;
     protected String serverUrl;
     protected State state = SIGNEDOUT;
