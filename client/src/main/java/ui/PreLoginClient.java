@@ -9,19 +9,19 @@ import response.RegisterResult;
 
 import java.util.Arrays;
 
-
-public class BaseClient extends Client {
-
+import static ui.State.SIGNEDIN;
 
 
+public class PreLoginClient extends Client {
 
 
-    public BaseClient(String serverUrl) {
+    public PreLoginClient(String serverUrl) {
         super(serverUrl);
         this.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
     }
 
+    @Override
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
@@ -43,6 +43,7 @@ public class BaseClient extends Client {
         RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
         RegisterResult result = server.register(request);
         authToken = result.authToken();
+        state = SIGNEDIN;
         return "You are now signed in has: " + result.username();
 
     }
@@ -51,11 +52,12 @@ public class BaseClient extends Client {
         LoginRequest request = new LoginRequest(params[0], params[1]);
         LoginResult result = server.login(request);
         authToken = result.authToken();
+        state = SIGNEDIN;
         return "You are now signed in has: " + result.username();
 
     }
 
-
+    @Override
     public String help(){
         return """
                 Register new user: "r", "register" <USERNAME> <PASSWORD> <EMAIL>

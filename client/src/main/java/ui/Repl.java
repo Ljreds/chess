@@ -4,15 +4,15 @@ package ui;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
-import static ui.State.SIGNEDOUT;
 
 
 public class Repl {
-    private final BaseClient client;
-    private Object state = SIGNEDOUT;
+    private Client client;
+    private final String serverUrl;
 
     public Repl(String serverUrl) {
-        client = new BaseClient(serverUrl);
+        this.serverUrl = serverUrl;
+        client = new PreLoginClient(serverUrl);
     }
 
     public void run(){
@@ -28,6 +28,10 @@ public class Repl {
             try{
                 result = client.eval(line);
                 System.out.println(result + SET_TEXT_COLOR_BLUE);
+                if(client.getState() == State.SIGNEDIN){
+                    client = new PostLoginClient(serverUrl);
+                    System.out.print(SET_TEXT_COLOR_BLUE + client.help());
+                }
             }catch(Throwable ex) {
                 var msg = ex.toString();
                 System.out.println(msg);
