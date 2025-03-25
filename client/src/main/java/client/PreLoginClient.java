@@ -1,4 +1,4 @@
-package ui;
+package client;
 
 import Server.ResponseException;
 import Server.ServerFacade;
@@ -9,7 +9,7 @@ import response.RegisterResult;
 
 import java.util.Arrays;
 
-import static ui.State.SIGNEDIN;
+import static client.State.SIGNEDIN;
 
 
 public class PreLoginClient extends Client {

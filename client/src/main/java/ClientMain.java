@@ -1,5 +1,6 @@
 import chess.*;
-import ui.Repl;
+import client.Repl;
+import ui.ChessUi;
 
 public class ClientMain {
     public static void main(String[] args) {
@@ -8,5 +9,7 @@ public class ClientMain {
         var url = "http://localhost:8080";
         Repl repl = new Repl(url);
         repl.run();
+        ChessUi chessUi = new ChessUi();
+        chessUi.createBoard(new ChessGame(), "BLACK");
     }
 }

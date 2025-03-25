@@ -1,4 +1,4 @@
-package ui;
+package client;
 
 import Server.ResponseException;
 import Server.ServerFacade;
@@ -7,7 +7,7 @@ import response.*;
 
 import java.util.Arrays;
 
-import static ui.State.SIGNEDOUT;
+import static client.State.SIGNEDOUT;
 
 public class PostLoginClient extends Client {
 

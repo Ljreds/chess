@@ -1,8 +1,8 @@
-package ui;
+package client;
 
 import Server.ServerFacade;
 
-import static ui.State.SIGNEDOUT;
+import static client.State.SIGNEDOUT;
 
 public class Client {
     protected static String authToken;
