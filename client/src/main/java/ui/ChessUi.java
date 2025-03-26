@@ -209,13 +209,6 @@ public class ChessUi {
 
 
 
-
-
-    private static void setWhite(PrintStream out) {
-        out.print(SET_BG_COLOR_WHITE);
-        out.print(SET_TEXT_COLOR_WHITE);
-    }
-
     private static void setRed(PrintStream out) {
         out.print(SET_BG_COLOR_RED);
         out.print(SET_TEXT_COLOR_RED);
@@ -229,12 +222,6 @@ public class ChessUi {
     private static void setTan(PrintStream out) {
         out.print(SET_BG_COLOR_TAN);
         out.print(SET_TEXT_COLOR_TAN);
-    }
-
-
-    private static void setBlack(PrintStream out) {
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_BLACK);
     }
 
     private static void resetColor(PrintStream out) {

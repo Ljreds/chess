@@ -245,7 +245,8 @@ public class ServiceTests {
 
         GameResult gameResult = gameService.createGame(new GameRequest("game1", regResult.authToken()), regResult.authToken());
 
-        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID(), regResult.authToken()), regResult.authToken()));
+        JoinRequest request = new JoinRequest("W", gameResult.gameID(), regResult.authToken());
+        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(request, regResult.authToken()));
 
         assertEquals("Error: bad request", ex.getMessage());
 
@@ -259,9 +260,11 @@ public class ServiceTests {
 
         GameResult gameResult = gameService.createGame(new GameRequest("game1", regResult.authToken()), regResult.authToken());
 
-        String authToken =  UUID.randomUUID().toString();
+        String auth = UUID.randomUUID().toString();
 
-        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(new JoinRequest("W", gameResult.gameID(), regResult.authToken()), authToken));
+        JoinRequest request = new JoinRequest("W", gameResult.gameID(), regResult.authToken());
+
+        Exception ex = assertThrows(Exception.class, () -> gameService.joinGame(request, auth));
 
         assertEquals("Error: unauthorized", ex.getMessage());
 

@@ -1,7 +1,7 @@
 package client;
 
-import Server.ResponseException;
-import Server.ServerFacade;
+import facade.ResponseException;
+import facade.ServerFacade;
 import model.GameData;
 import request.*;
 import response.*;
@@ -18,7 +18,7 @@ public class PostLoginClient extends Client {
 
     private final ChessUi chessUi;
     private static Map<Integer, Integer> gameIds;
-    private static final PostLoginClient instance = new PostLoginClient();
+    private static final PostLoginClient INSTANCE = new PostLoginClient();
 
     private PostLoginClient() {
         super(serverUrl);
@@ -141,10 +141,11 @@ public class PostLoginClient extends Client {
                List all games: "list"
                Join a game: "j", "join" <Player Color> <gameID>
                Spectate a game: "s", "spectate" <gameID>
+               Print this message: "h", "help"
                """;
     }
 
     public static synchronized PostLoginClient getInstance(){
-        return instance;
+        return INSTANCE;
     }
 }

@@ -1,6 +1,6 @@
 package client;
 
-import Server.ServerFacade;
+import facade.ServerFacade;
 
 import static client.State.SIGNEDOUT;
 

@@ -1,7 +1,7 @@
 package client;
 
-import Server.ResponseException;
-import Server.ServerFacade;
+import facade.ResponseException;
+import facade.ServerFacade;
 import request.LoginRequest;
 import request.RegisterRequest;
 import response.LoginResult;
@@ -14,7 +14,7 @@ import static client.State.SIGNEDIN;
 
 public class PreLoginClient extends Client {
 
-    private static PreLoginClient instance = new PreLoginClient();
+    private static final PreLoginClient INSTANCE = new PreLoginClient();
 
     private PreLoginClient() {
         super(serverUrl);
@@ -35,6 +35,8 @@ public class PreLoginClient extends Client {
                 case "h" -> help();
                 default -> throw new IllegalStateException("Unexpected value: " + cmd);
             };
+        }catch(ArrayIndexOutOfBoundsException ex) {
+            return "Error: Some inputs left blank";
         }catch(Throwable ex){
             return ex.getMessage();
         }
@@ -71,7 +73,7 @@ public class PreLoginClient extends Client {
     }
 
     public static synchronized PreLoginClient getInstance(){
-       return instance;
+       return INSTANCE;
     }
 
 }
