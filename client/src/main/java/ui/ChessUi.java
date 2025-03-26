@@ -10,12 +10,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import chess.ChessPiece.PieceType;
 import chess.ChessGame.TeamColor;
+import model.GameData;
 
 import static ui.EscapeSequences.*;
 
 public class ChessUi {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_CHAR = 3;
 
 
     public void createBoard(ChessGame game, String playerColor){
@@ -26,6 +26,30 @@ public class ChessUi {
         drawHeaders(out, playerColor);
         drawBoard(out, playerColor, game.getBoard());
         drawHeaders(out, playerColor);
+
+    }
+
+    public void createList(Collection<GameData> list){
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+
+        int n = 1;
+        for(GameData game : list){
+            out.print(n + ".  ");
+            out.print("Game name: " + game.gameName() + EMPTY);
+            if(game.whiteUsername() == null){
+                out.print("White: EMPTY" + EMPTY);
+            }else{
+                out.print("White: " + game.whiteUsername() + EMPTY);
+            }
+            if(game.blackUsername() == null){
+                out.print("Black: EMPTY");
+            }else{
+                out.print("Black: " + game.blackUsername());
+            }
+            n++;
+
+            out.println();
+        }
 
     }
 
@@ -60,7 +84,7 @@ public class ChessUi {
 
     private static void drawBoard(PrintStream out, String playerColor, ChessBoard chess){
         List<Integer> ranks = new ArrayList<>();
-        for(int i = 8; i > 0; i--){
+        for(int i = 1; i <= 8; i++){
             ranks.add(i);
 
         }
@@ -71,7 +95,7 @@ public class ChessUi {
        }
     }
 
-    private static void whitePerspective(PrintStream out, ChessBoard chess, List<Integer> ranks){
+    private static void blackPerspective(PrintStream out, ChessBoard chess, List<Integer> ranks){
 
         for(int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; squareRow++){
             drawRanks(out, String.valueOf(ranks.get(squareRow)));
@@ -88,7 +112,7 @@ public class ChessUi {
         }
     }
 
-    private static void blackPerspective(PrintStream out, ChessBoard chess, List<Integer> ranks){
+    private static void whitePerspective(PrintStream out, ChessBoard chess, List<Integer> ranks){
 
         for(int squareRow = BOARD_SIZE_IN_SQUARES; squareRow > 0; squareRow--){
             drawRanks(out, String.valueOf(ranks.get(squareRow - 1)));
@@ -181,6 +205,7 @@ public class ChessUi {
 
         resetColor(out);
     }
+
 
 
 

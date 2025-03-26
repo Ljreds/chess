@@ -193,7 +193,7 @@ public class ServiceTests {
 
         RegisterResult regResult = userService.register(request);
         AuthData auth = AUTH_MEMORY.getAuth(regResult.authToken());
-        GameRequest outRequest = new GameRequest("", regResult.authToken());
+        GameRequest outRequest = new GameRequest(null, regResult.authToken());
 
         Exception ex = assertThrows(Exception.class, () -> gameService.createGame(outRequest, auth.authToken()));
 

@@ -7,11 +7,11 @@ import static client.State.SIGNEDOUT;
 public class Client {
     protected static String authToken;
     protected ServerFacade server;
-    protected String serverUrl;
+    protected static String serverUrl;
     protected State state = SIGNEDOUT;
 
     public Client(String serverUrl) {
-        this.serverUrl = serverUrl;
+        Client.serverUrl = serverUrl;
     }
 
     public State getState() {
