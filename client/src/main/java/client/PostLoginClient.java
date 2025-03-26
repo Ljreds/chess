@@ -22,7 +22,6 @@ public class PostLoginClient extends Client {
 
     private PostLoginClient() {
         super(serverUrl);
-        Client.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
         chessUi = new ChessUi();
         gameIds = new HashMap<>();
