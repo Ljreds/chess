@@ -47,6 +47,8 @@ public class PostLoginClient extends Client {
                 case "h" -> help();
                 default -> throw new IllegalStateException("Unexpected value: " + cmd);
             };
+        }catch(ArrayIndexOutOfBoundsException ex) {
+            return "Error: Some inputs left blank";
         }catch(Throwable ex){
             return ex.getMessage();
         }
