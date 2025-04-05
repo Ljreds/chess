@@ -1,5 +1,6 @@
 package client;
 
+import facade.ResponseException;
 import facade.ServerFacade;
 
 import static client.State.SIGNEDOUT;
@@ -24,5 +25,9 @@ public class Client {
 
     public String help() {
         return null;
+    }
+
+    public void compileGames() throws ResponseException {
+
     }
 }

@@ -28,11 +28,12 @@ public class Repl {
                 System.out.println(result + SET_TEXT_COLOR_BLUE);
                 if(client.getState() == State.SIGNEDIN){
                     client = PostLoginClient.getInstance();
+                    client.compileGames();
                 }else{
                     client = PreLoginClient.getInstance();
                 }
             }catch(Throwable ex) {
-                var msg = ex.toString();
+                var msg = ex.getMessage();
                 System.out.println(msg);
             }
         }

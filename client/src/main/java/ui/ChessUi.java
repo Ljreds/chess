@@ -99,8 +99,8 @@ public class ChessUi {
 
         for(int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; squareRow++){
             drawRanks(out, String.valueOf(ranks.get(squareRow)));
-            for(int squareCol = 0; squareCol < BOARD_SIZE_IN_SQUARES; squareCol++){
-                ChessPiece piece = chess.getPiece(new ChessPosition(squareRow + 1, squareCol + 1));
+            for(int squareCol = BOARD_SIZE_IN_SQUARES; squareCol > 0; squareCol--){
+                ChessPiece piece = chess.getPiece(new ChessPosition(squareRow + 1, squareCol));
                 if(squareRow % 2 == 0){
                     whiteFirst(out, squareCol, piece);
                 }else{
@@ -116,12 +116,12 @@ public class ChessUi {
 
         for(int squareRow = BOARD_SIZE_IN_SQUARES; squareRow > 0; squareRow--){
             drawRanks(out, String.valueOf(ranks.get(squareRow - 1)));
-            for(int squareCol = BOARD_SIZE_IN_SQUARES; squareCol > 0; squareCol--){
-                ChessPiece piece = chess.getPiece(new ChessPosition(squareRow, squareCol));
-                if(squareRow % 2 == 0){
-                    blackFirst(out, squareCol, piece);
-                }else{
+            for(int squareCol = 0; squareCol < 8; squareCol++) {
+                ChessPiece piece = chess.getPiece(new ChessPosition(squareRow, squareCol + 1));
+                if (squareRow % 2 == 0) {
                     whiteFirst(out, squareCol, piece);
+                }else{
+                    blackFirst(out, squareCol, piece);
                 }
             }
             drawRanks(out, String.valueOf(ranks.get(squareRow - 1)));

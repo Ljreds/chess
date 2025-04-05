@@ -17,14 +17,13 @@ import static client.State.SIGNEDOUT;
 public class PostLoginClient extends Client {
 
     private final ChessUi chessUi;
-    private static Map<Integer, Integer> gameIds;
+    private static final Map<Integer, Integer> gameIds = new HashMap<>();
     private static final PostLoginClient INSTANCE = new PostLoginClient();
 
-    private PostLoginClient() {
+    private PostLoginClient(){
         super(serverUrl);
         server = new ServerFacade(serverUrl);
         chessUi = new ChessUi();
-        gameIds = new HashMap<>();
 
     }
 
@@ -32,10 +31,11 @@ public class PostLoginClient extends Client {
     @Override
     public String eval(String input) {
         try {
-            compileGames();
+
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            state = SIGNEDIN;
             return switch (cmd) {
                 case "logout" -> logout();
                 case "create", "c" -> createGame(params);
@@ -43,7 +43,7 @@ public class PostLoginClient extends Client {
                 case "list" -> listGame();
                 case "spectate", "s" -> spectate(params);
                 case "quit", "q" -> "quit";
-                case "h" -> help();
+                case "h", "help" -> help();
                 default -> throw new IllegalStateException("Unexpected value: " + cmd);
             };
         }catch(ArrayIndexOutOfBoundsException ex) {
@@ -64,19 +64,24 @@ public class PostLoginClient extends Client {
         return null;
     }
     private String createGame(String... params) throws ResponseException {
-        GameRequest request = new GameRequest(params[0], authToken);
-        GameResult result = server.createGame(request);
-        state = SIGNEDIN;
-        if(result != null) {
-            gameIds.put(gameIds.size() + 1, result.gameID());
-            return "New game created: " + params[0];
+        if(params.length == 1) {
+            GameRequest request = new GameRequest(params[0], authToken);
+            GameResult result = server.createGame(request);
+            state = SIGNEDIN;
+            if (result != null) {
+                gameIds.put(gameIds.size() + 1, result.gameID());
+                return "New game created: " + params[0];
+            }
+            return null;
+        }else{
+            return "Error: Parameters are incorrect";
         }
-        return null;
     }
 
     private String listGame() throws ResponseException {
         ListRequest request = new ListRequest(authToken);
         ListResult result = server.listGame(request);
+        compileGames();
 
         state = SIGNEDIN;
 
@@ -85,51 +90,60 @@ public class PostLoginClient extends Client {
 
     }
 
-    private void compileGames() throws ResponseException {
+    @Override
+    public void compileGames() throws ResponseException {
         ListRequest request = new ListRequest(authToken);
         ListResult result = server.listGame(request);
         int n = 1;
         for(GameData game : result.games()){
             gameIds.put(n, game.gameID());
+            n++;
         }
     }
 
-    private String joinGame(String... params) {
-        try {
-            int gameId = Integer.parseInt(params[1]);
-            String color = params[0].toUpperCase();
-            JoinRequest request = new JoinRequest(color, gameIds.get(gameId), authToken);
-            JoinResult result = server.joinGame(request);
-            state = SIGNEDIN;
+    private String joinGame(String... params) throws ResponseException {
+        if(params.length == 2) {
+            try {
+                int gameId = Integer.parseInt(params[1]);
+                String color = params[0].toUpperCase();
+                JoinRequest request = new JoinRequest(color, gameIds.get(gameId), authToken);
+                JoinResult result = server.joinGame(request);
+                state = SIGNEDIN;
 
-            chessUi.createBoard(result.chessGame(), color);
+                chessUi.createBoard(result.chessGame(), color);
 
-            return "";
+                return "";
 
-        } catch (NumberFormatException ex) {
-            throw new RuntimeException("Invalid gameID:" + params[1]);
-        } catch (ResponseException ex) {
-            throw new RuntimeException(ex);
+            }catch(ResponseException ex){
+                throw ex;
+            } catch(Throwable ex){
+                return "Invalid gameID: " + params[1];
+            }
+        }else{
+            return "Error: Parameters are incorrect";
         }
-
     }
 
-    private String spectate(String... params) {
-        try {
-            int gameId = Integer.parseInt(params[0]);
-            JoinRequest request = new JoinRequest("SPECTATE", gameIds.get(gameId), authToken);
-            JoinResult result = server.joinGame(request);
+    private String spectate(String... params) throws ResponseException{
+        if(params.length == 1) {
+            try {
+                int gameId = Integer.parseInt(params[0]);
+                JoinRequest request = new JoinRequest("SPECTATE", gameIds.get(gameId), authToken);
+                JoinResult result = server.joinGame(request);
 
-            state = SIGNEDIN;
+                state = SIGNEDIN;
 
-            chessUi.createBoard(result.chessGame(), "WHITE");
+                chessUi.createBoard(result.chessGame(), "WHITE");
 
-            return "";
+                return "";
 
-        } catch (NumberFormatException ex) {
-            throw new RuntimeException("Invalid gameID:" + params[1]);
-        } catch (ResponseException ex) {
-            throw new RuntimeException(ex);
+            }catch(ResponseException ex){
+                throw ex;
+            }catch(Throwable ex){
+                return "Invalid gameID: " + params[0];
+            }
+        }else{
+            return "Error: Parameters are incorrect";
         }
     }
 

@@ -32,7 +32,7 @@ public class PreLoginClient extends Client {
                 case "register", "r" -> register(params);
                 case "login", "l" -> login(params);
                 case "quit", "q" -> "quit";
-                case "h" -> help();
+                case "h", "help" -> help();
                 default -> throw new IllegalStateException("Unexpected value: " + cmd);
             };
         }catch(ArrayIndexOutOfBoundsException ex) {
@@ -43,20 +43,28 @@ public class PreLoginClient extends Client {
     }
 
     public String register(String...params) throws ResponseException {
-        RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
-        RegisterResult result = server.register(request);
-        authToken = result.authToken();
-        state = SIGNEDIN;
-        return "You are now signed in has: " + result.username();
+        if(params.length == 3) {
+            RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+            RegisterResult result = server.register(request);
+            authToken = result.authToken();
+            state = SIGNEDIN;
+            return "You are now signed in has: " + result.username();
+        }else{
+            return "Error: Parameters are incorrect";
+        }
 
     }
 
     public String login(String...params) throws ResponseException {
-        LoginRequest request = new LoginRequest(params[0], params[1]);
-        LoginResult result = server.login(request);
-        authToken = result.authToken();
-        state = SIGNEDIN;
-        return "You are now signed in has: " + result.username();
+        if(params.length == 2) {
+            LoginRequest request = new LoginRequest(params[0], params[1]);
+            LoginResult result = server.login(request);
+            authToken = result.authToken();
+            state = SIGNEDIN;
+            return "You are now signed in has: " + result.username();
+        }else{
+            return "Error: Parameters are incorrect";
+        }
 
     }
 
