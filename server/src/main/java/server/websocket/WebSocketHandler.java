@@ -32,6 +32,7 @@ public class WebSocketHandler {
                 case CONNECT -> connect(username, session, command);
                 case MAKE_MOVE -> makeMove(command.getAuthToken(), session);
                 case LEAVE -> closeConnection();
+                case RESIGN -> resign();
 
             }
         } catch(UnauthorizedException | ResponseException ex) {
