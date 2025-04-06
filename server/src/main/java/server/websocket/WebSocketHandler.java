@@ -42,9 +42,8 @@ public class WebSocketHandler {
 
     private void connect(String visitorName, Session session, UserGameCommand command) throws IOException {
         connections.add(visitorName, session, command.getGameID());
-        var message = String.format("%s is in the shop", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcast(visitorName, notification);
+        connections.broadcast(visitorName, notification, command.getGameID());
     }
 
     private String getUsername(String authToken) throws ResponseException {
