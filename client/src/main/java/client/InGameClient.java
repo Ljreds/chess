@@ -1,32 +1,17 @@
 package client;
 
-import facade.ResponseException;
 import facade.ServerFacade;
-import model.GameData;
-import request.GameRequest;
-import request.JoinRequest;
-import request.ListRequest;
-import request.LogoutRequest;
-import response.GameResult;
-import response.JoinResult;
-import response.ListResult;
-import response.LogoutResult;
 import ui.ChessUi;
-import websocket.NotificationHandler;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static client.State.SIGNEDIN;
-import static client.State.SIGNEDOUT;
 
 public class InGameClient extends Client {
 
     private final ChessUi chessUi;
-    private static final Map<Integer, Integer> gameIds = new HashMap<>();
 
-    private InGameClient(NotificationHandler notificationHandler){
+    private InGameClient(){
         super(serverUrl);
         server = new ServerFacade(serverUrl);
         chessUi = new ChessUi();
@@ -44,7 +29,7 @@ public class InGameClient extends Client {
             state = SIGNEDIN;
             return switch (cmd) {
                 case "move", "m" -> makeMove(params);
-                case "highlight", "h" -> highlight(params);
+                case "highlight", "hl" -> highlight(params);
                 case "redraw", "r" -> redraw();
                 case "exit", "e" -> leave();
                 case "resign" -> resign();
@@ -59,6 +44,25 @@ public class InGameClient extends Client {
         }
     }
 
+    private String resign() {
+        return null;
+    }
+
+    private String leave() {
+        return null;
+    }
+
+    private String redraw() {
+        return null;
+    }
+
+    private String highlight(String[] params) {
+        return null;
+    }
+
+    private String makeMove(String[] params) {
+        return null;
+    }
 
 
     @Override
@@ -66,7 +70,7 @@ public class InGameClient extends Client {
        return """
                Redraw the board: "r", "redraw"
                Make a move on your turn: "m", "move" <Piece> <Position>
-               Highlight all available moves: "h", "highlight" <Piece>
+               Highlight all available moves: "hl", "highlight" <Piece>
                Leave game: "e", "exit"
                Resign game: "resign"
                Print this message: "h", "help"

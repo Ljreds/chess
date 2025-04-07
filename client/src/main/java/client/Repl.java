@@ -1,6 +1,8 @@
 package client;
 
 
+import websocket.messages.ServerMessage;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -45,5 +47,4 @@ public class Repl {
     private void printPrompt() {
         System.out.print("\n" + SET_TEXT_COLOR_MAGENTA + ">>> " + SET_TEXT_COLOR_BLUE);
     }
-
 }

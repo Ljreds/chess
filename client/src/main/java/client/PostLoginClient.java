@@ -6,6 +6,7 @@ import model.GameData;
 import request.*;
 import response.*;
 import ui.ChessUi;
+import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -108,6 +109,7 @@ public class PostLoginClient extends Client {
                 String color = params[0].toUpperCase();
                 JoinRequest request = new JoinRequest(color, gameIds.get(gameId), authToken);
                 JoinResult result = server.joinGame(request);
+                ws = new WebSocketFacade(serverUrl);
                 state = SIGNEDIN;
 
                 chessUi.createBoard(result.chessGame(), color);
