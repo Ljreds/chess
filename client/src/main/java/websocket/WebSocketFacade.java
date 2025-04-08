@@ -12,6 +12,9 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
 
     Session session;
+    private ServerMessage.ServerMessageType type;
+
+
 
     public WebSocketFacade(String url) throws ResponseException {
         try {
@@ -26,7 +29,8 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(notification);
+                    type = notification.getServerMessageType();
+
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -34,9 +38,22 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    public ServerMessage.ServerMessageType getType() {
+        return type;
+    }
+
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void connect(String authToken, Integer gameId) throws ResponseException {
+        try {
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
 }

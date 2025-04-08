@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.UnauthorizedException;
 import websocket.commands.UserGameCommand;
+import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 
 
@@ -42,7 +43,7 @@ public class WebSocketHandler {
 
     private void connect(String visitorName, Session session, UserGameCommand command) throws IOException {
         connections.add(visitorName, session, command.getGameID());
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "");
         connections.broadcast(visitorName, notification, command.getGameID());
     }
 
