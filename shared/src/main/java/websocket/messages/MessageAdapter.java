@@ -50,7 +50,7 @@ public class MessageAdapter extends TypeAdapter<ServerMessage> {
                 return switch (type) {
                     case ERROR -> new Error(type, exception);
                     case NOTIFICATION -> new Notification(type, message);
-                    case LOAD_GAME -> new LoadGame(type, chess);
+                    case LOAD_GAME -> new LoadGame(type, message, chess);
                 };
             }
         }

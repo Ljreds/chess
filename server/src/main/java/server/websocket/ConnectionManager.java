@@ -1,7 +1,10 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.MessageAdapter;
 import websocket.messages.ServerMessage;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,11 +23,16 @@ public class ConnectionManager {
     }
 
     public void broadcast(String excludeVisitorName, ServerMessage notification, Integer gameId) throws IOException {
+
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+        Gson gson = builder.create();
+
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.visitorName.equals(excludeVisitorName) && gameId.equals(c.getGameId())) {
-                    c.send(notification.toString());
+                    c.send(gson.toJson(notification));
                 }
             } else {
                 removeList.add(c);

@@ -43,7 +43,8 @@ public class WebSocketHandler {
 
     private void connect(String visitorName, Session session, UserGameCommand command) throws IOException {
         connections.add(visitorName, session, command.getGameID());
-        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "");
+        String message = String.format("%s has joined.", visitorName);
+        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(visitorName, notification, command.getGameID());
     }
 

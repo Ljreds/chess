@@ -1,7 +1,9 @@
 package websocket;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import facade.ResponseException;
 import websocket.commands.UserGameCommand;
+import websocket.messages.MessageAdapter;
 import websocket.messages.ServerMessage;
 import javax.websocket.*;
 import java.io.IOException;
@@ -28,8 +30,11 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    type = notification.getServerMessageType();
+                    GsonBuilder builder = new GsonBuilder();
+                    builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+                    Gson gson = builder.create();
+
+                    ServerMessage notification = gson.fromJson(message, ServerMessage.class);
 
                 }
             });
@@ -49,8 +54,8 @@ public class WebSocketFacade extends Endpoint {
 
     public void connect(String authToken, Integer gameId) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
