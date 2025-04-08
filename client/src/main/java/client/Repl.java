@@ -1,17 +1,17 @@
 package client;
 
 
-import websocket.messages.ServerMessage;
+import websocket.NotificationHandler;
 
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private Client client;
 
-    public Repl(Client chessClient) {
+    public Repl(Client chessClient){
         client = PreLoginClient.getInstance();
     }
 
@@ -30,6 +30,7 @@ public class Repl {
                 System.out.println(result + SET_TEXT_COLOR_BLUE);
                 if(client.getState() == State.SIGNEDIN){
                     client = PostLoginClient.getInstance();
+                    client.setNotificationHandler(this);
                     client.compileGames();
                 }else{
                     client = PreLoginClient.getInstance();
@@ -43,8 +44,15 @@ public class Repl {
 
     }
 
+    @Override
+    public void notify(String message) {
+        System.out.println(SET_TEXT_COLOR_RED + message);
+        printPrompt();
+    }
 
     private void printPrompt() {
         System.out.print("\n" + SET_TEXT_COLOR_MAGENTA + ">>> " + SET_TEXT_COLOR_BLUE);
     }
+
+
 }

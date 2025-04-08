@@ -1,8 +1,7 @@
 package websocket.messages;
 
 import chess.ChessGame;
-
-import java.util.Objects;
+import facade.ResponseException;
 
 
 public class LoadGame extends ServerMessage {
@@ -17,10 +16,17 @@ public class LoadGame extends ServerMessage {
         this.chessGame = chess;
     }
 
+    @Override
+    public ResponseException getException() {
+        return null;
+    }
+
+    @Override
     public ChessGame getChessGame() {
         return chessGame;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }

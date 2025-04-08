@@ -1,5 +1,6 @@
 package websocket.messages;
 
+import chess.ChessGame;
 import facade.ResponseException;
 
 
@@ -14,8 +15,19 @@ public class Error extends ServerMessage {
         this.exception = exception;
     }
 
+    @Override
     public ResponseException getException() {
         return exception;
+    }
+
+    @Override
+    public ChessGame getChessGame() {
+        return null;
+    }
+
+    @Override
+    public String getMessage() {
+        return "";
     }
 
     @Override

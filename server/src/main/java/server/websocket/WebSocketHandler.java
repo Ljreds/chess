@@ -3,25 +3,28 @@ package server.websocket;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.SqlAuthDao;
+import dataaccess.SqlGameDao;
 import facade.ResponseException;
 import model.AuthData;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.UnauthorizedException;
 import websocket.commands.UserGameCommand;
-import websocket.messages.Notification;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 @WebSocket
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
-    private SqlAuthDao authDao = SqlAuthDao.getInstance();
+    private final SqlAuthDao authDao = SqlAuthDao.getInstance();
+    private SqlGameDao gameDao = SqlGameDao.getInstance();
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -31,9 +34,9 @@ public class WebSocketHandler {
 
             switch (command.getCommandType()) {
                 case CONNECT -> connect(username, session, command);
-                case MAKE_MOVE -> makeMove(command.getAuthToken(), session);
-                case LEAVE -> closeConnection();
-                case RESIGN -> resign();
+                case MAKE_MOVE -> makeMove(username, session, command);
+                case LEAVE -> closeConnection(username, session, command);
+                case RESIGN -> resign(username, session, command);
 
             }
         } catch(UnauthorizedException | ResponseException ex) {
@@ -41,11 +44,32 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String visitorName, Session session, UserGameCommand command) throws IOException {
-        connections.add(visitorName, session, command.getGameID());
-        String message = String.format("%s has joined.", visitorName);
-        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(visitorName, notification, command.getGameID());
+    private void resign(String username, Session session, UserGameCommand command) {
+    }
+
+    private void closeConnection(String username, Session session, UserGameCommand command) {
+    }
+
+    private void makeMove(String username, Session session, UserGameCommand command) {
+    }
+
+
+    private void connect(String visitorName, Session session, UserGameCommand command) throws ResponseException {
+        try {
+            connections.add(visitorName, session, command.getGameID());
+            GameData gameData = gameDao.getGame(command.getGameID());
+            String teamColor = "";
+            if(Objects.equals(gameData.whiteUsername(), visitorName)){
+                teamColor = " white team";
+            }else if(Objects.equals(gameData.blackUsername(), visitorName)){
+                teamColor = " black team";
+            }
+            String message = String.format("%s has joined %s.", visitorName, teamColor);
+            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(visitorName, notification, command.getGameID());
+        }catch(Throwable ex){
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     private String getUsername(String authToken) throws ResponseException {

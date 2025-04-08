@@ -32,4 +32,8 @@ public class Client {
     public void compileGames() throws ResponseException {
 
     }
+
+    public void setNotificationHandler(Repl repl) {
+
+    }
 }

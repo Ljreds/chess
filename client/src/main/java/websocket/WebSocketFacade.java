@@ -1,7 +1,9 @@
 package websocket;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import facade.ResponseException;
+import ui.ChessUi;
 import websocket.commands.UserGameCommand;
 import websocket.messages.MessageAdapter;
 import websocket.messages.ServerMessage;
@@ -15,10 +17,11 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     private ServerMessage.ServerMessageType type;
+    private ChessUi ui = new ChessUi();
 
 
 
-    public WebSocketFacade(String url) throws ResponseException {
+    public WebSocketFacade(String url, NotificationHandler handler) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -35,6 +38,9 @@ public class WebSocketFacade extends Endpoint {
                     Gson gson = builder.create();
 
                     ServerMessage notification = gson.fromJson(message, ServerMessage.class);
+                    String notify = eval(notification);
+                    handler.notify(notify);
+
 
                 }
             });
@@ -59,6 +65,24 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+    }
+
+    private String eval(ServerMessage message){
+        return switch (message.getServerMessageType()){
+            case NOTIFICATION -> message.getMessage();
+            case LOAD_GAME -> loadGame(message.getMessage(), message.getChessGame());
+            case ERROR -> error(message.getException());
+        };
+    }
+
+    private String loadGame(String message, ChessGame game){
+        ui.createBoard(game, "WHITE");
+        return null;
+
+    }
+
+    private String error(ResponseException ex){
+        return null;
     }
 
 }

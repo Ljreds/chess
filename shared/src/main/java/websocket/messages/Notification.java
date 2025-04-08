@@ -1,7 +1,8 @@
 package websocket.messages;
 
-import facade.ResponseException;
 
+import chess.ChessGame;
+import facade.ResponseException;
 
 public class Notification extends ServerMessage {
 
@@ -14,7 +15,18 @@ public class Notification extends ServerMessage {
         this.message = message;
     }
 
-    public String getException() {
+    @Override
+    public ResponseException getException() {
+        return null;
+    }
+
+    @Override
+    public ChessGame getChessGame() {
+        return null;
+    }
+
+    @Override
+    public String getMessage() {
         return message;
     }
 

@@ -56,19 +56,19 @@ public class GameService {
         if(Objects.equals(playerColor, "WHITE")){
             if(gameData.whiteUsername() == null) {
                 gameDao.updateUser(gameID, auth.username(), playerColor);
-                return new JoinResult(gameData.game());
+                return new JoinResult(gameData.game(), gameData.gameID());
             }else{
                 throw new TakenException("Error: already taken");
             }
         }else if(Objects.equals(playerColor, "BLACK")){
             if(gameData.blackUsername() == null) {
                 gameDao.updateUser(gameID, auth.username(), playerColor);
-                return new JoinResult(gameData.game());
+                return new JoinResult(gameData.game(), gameData.gameID());
             }else{
                 throw new TakenException("Error: already taken");
             }
         }else if(Objects.equals(playerColor, "SPECTATE")){
-           return new JoinResult(gameData.game());
+           return new JoinResult(gameData.game(), gameData.gameID());
         }else{
             throw new RequestException("Error: bad request");
         }

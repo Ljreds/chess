@@ -1,5 +1,8 @@
 package websocket.messages;
 
+import chess.ChessGame;
+import facade.ResponseException;
+
 import java.util.Objects;
 
 /**
@@ -24,6 +27,12 @@ public abstract class ServerMessage {
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
+
+    public abstract ResponseException getException();
+
+    public abstract ChessGame getChessGame();
+
+    public abstract String getMessage();
 
     @Override
     public boolean equals(Object o) {

@@ -6,6 +6,7 @@ import model.GameData;
 import request.*;
 import response.*;
 import ui.ChessUi;
+import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 
 import java.util.Arrays;
@@ -20,6 +21,7 @@ public class PostLoginClient extends Client {
     private final ChessUi chessUi;
     private static final Map<Integer, Integer> gameIds = new HashMap<>();
     private static final PostLoginClient INSTANCE = new PostLoginClient();
+    private NotificationHandler notificationHandler = null;
 
     private PostLoginClient(){
         super(serverUrl);
@@ -109,7 +111,8 @@ public class PostLoginClient extends Client {
                 String color = params[0].toUpperCase();
                 JoinRequest request = new JoinRequest(color, gameIds.get(gameId), authToken);
                 JoinResult result = server.joinGame(request);
-                ws = new WebSocketFacade(serverUrl);
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.connect(authToken, result.gameId());
                 state = SIGNEDIN;
 
                 chessUi.createBoard(result.chessGame(), color);
@@ -163,5 +166,13 @@ public class PostLoginClient extends Client {
 
     public static synchronized PostLoginClient getInstance(){
         return INSTANCE;
+    }
+
+    public NotificationHandler getNotificationHandler() {
+        return notificationHandler;
+    }
+
+    public void setNotificationHandler(NotificationHandler notificationHandler) {
+        this.notificationHandler = notificationHandler;
     }
 }
