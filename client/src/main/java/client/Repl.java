@@ -13,6 +13,7 @@ public class Repl implements NotificationHandler {
 
     public Repl(Client chessClient){
         client = PreLoginClient.getInstance();
+        client.setNotificationHandler(this);
     }
 
     public void run(){
@@ -30,8 +31,6 @@ public class Repl implements NotificationHandler {
                 System.out.println(result + SET_TEXT_COLOR_BLUE);
                 if(client.getState() == State.SIGNEDIN){
                     client = PostLoginClient.getInstance();
-                    client.setNotificationHandler(this);
-                    client.compileGames();
                 }else{
                     client = PreLoginClient.getInstance();
                 }

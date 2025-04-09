@@ -1,6 +1,7 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataaccess.DataAccessException;
 import dataaccess.SqlAuthDao;
 import dataaccess.SqlGameDao;
@@ -8,6 +9,7 @@ import facade.ResponseException;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.UnauthorizedException;
@@ -15,6 +17,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
 
+import javax.websocket.OnOpen;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -26,10 +29,20 @@ public class WebSocketHandler {
     private final SqlAuthDao authDao = SqlAuthDao.getInstance();
     private SqlGameDao gameDao = SqlGameDao.getInstance();
 
+    @OnOpen
+    public void onOpen(Session session) {
+        System.out.println("WebSocket connected");
+    }
+
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         try {
-            UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+            System.out.println(message);
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+            Gson gson = builder.create();
+
+            UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
             String username = getUsername(command.getAuthToken());
 
             switch (command.getCommandType()) {

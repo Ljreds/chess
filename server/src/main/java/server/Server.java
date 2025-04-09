@@ -1,6 +1,7 @@
 package server;
 
 import handler.*;
+import server.websocket.WebSocketTest;
 import spark.*;
 
 
@@ -12,6 +13,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/ws", WebSocketTest.class);
 
         Spark.post("/user", (req, res) -> (RegisterHandler.getInstance().registerHandle(req, res)));
         Spark.post("/session", (req, res) -> (LoginHandler.getInstance().loginHandle(req, res)));
@@ -33,3 +35,4 @@ public class Server {
         Spark.awaitStop();
     }
 }
+

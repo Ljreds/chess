@@ -17,7 +17,7 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     private ServerMessage.ServerMessageType type;
-    private ChessUi ui = new ChessUi();
+    private final ChessUi ui = new ChessUi();
 
 
 
@@ -25,6 +25,8 @@ public class WebSocketFacade extends Endpoint {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
+
+            System.out.println(socketURI);
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -56,12 +58,23 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+        System.out.println("WebSocket opened: " + session.getId());
+    }
+
+    public void test() throws IOException {
+        System.out.println("Calling Test");
+        System.out.println("Session open: " + session.isOpen());
+        this.session.getBasicRemote().sendText("test");
     }
 
     public void connect(String authToken, Integer gameId) throws ResponseException {
         try {
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+            Gson gson = builder.create();
+
             var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            this.session.getBasicRemote().sendText(gson.toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

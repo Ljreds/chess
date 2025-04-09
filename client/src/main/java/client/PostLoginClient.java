@@ -7,11 +7,9 @@ import request.*;
 import response.*;
 import ui.ChessUi;
 import websocket.NotificationHandler;
-import websocket.WebSocketFacade;
+import websocket.WebSocketCommunicator;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static client.State.SIGNEDIN;
 import static client.State.SIGNEDOUT;
@@ -19,9 +17,7 @@ import static client.State.SIGNEDOUT;
 public class PostLoginClient extends Client {
 
     private final ChessUi chessUi;
-    private static final Map<Integer, Integer> gameIds = new HashMap<>();
     private static final PostLoginClient INSTANCE = new PostLoginClient();
-    private NotificationHandler notificationHandler = null;
 
     private PostLoginClient(){
         super(serverUrl);
@@ -38,6 +34,7 @@ public class PostLoginClient extends Client {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            compileGames();
             state = SIGNEDIN;
             return switch (cmd) {
                 case "logout" -> logout();
@@ -111,9 +108,8 @@ public class PostLoginClient extends Client {
                 String color = params[0].toUpperCase();
                 JoinRequest request = new JoinRequest(color, gameIds.get(gameId), authToken);
                 JoinResult result = server.joinGame(request);
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
-                ws.connect(authToken, result.gameId());
-                state = SIGNEDIN;
+                ws = new WebSocketCommunicator(serverUrl);
+                ws.send("The test");
 
                 chessUi.createBoard(result.chessGame(), color);
 

@@ -2,7 +2,12 @@ package client;
 
 import facade.ResponseException;
 import facade.ServerFacade;
+import websocket.NotificationHandler;
+import websocket.WebSocketCommunicator;
 import websocket.WebSocketFacade;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static client.State.SIGNEDOUT;
 
@@ -10,8 +15,11 @@ public class Client {
     protected static String authToken;
     protected ServerFacade server;
     protected static String serverUrl;
-    protected static WebSocketFacade ws;
+    protected static WebSocketCommunicator ws;
     protected State state = SIGNEDOUT;
+    protected NotificationHandler notificationHandler = null;
+    protected static final Map<Integer, Integer> gameIds = new HashMap<>();
+
 
     public Client(String serverUrl) {
         Client.serverUrl = serverUrl;
@@ -33,7 +41,7 @@ public class Client {
 
     }
 
-    public void setNotificationHandler(Repl repl) {
-
+    public void setNotificationHandler(NotificationHandler notificationHandler) {
+        this.notificationHandler = notificationHandler;
     }
 }
