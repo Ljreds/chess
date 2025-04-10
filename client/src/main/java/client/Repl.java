@@ -49,7 +49,7 @@ public class Repl implements NotificationHandler {
 
     @Override
     public void notify(String message) {
-        System.out.println(SET_TEXT_COLOR_RED + message);
+        System.out.println(SET_TEXT_COLOR_BLUE + message);
         printPrompt();
     }
 

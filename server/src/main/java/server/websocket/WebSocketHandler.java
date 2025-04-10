@@ -10,10 +10,10 @@ import facade.ResponseException;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.UnauthorizedException;
+import websocket.commands.CommandAdapter;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 import websocket.messages.Error;
@@ -21,6 +21,8 @@ import websocket.messages.Error;
 
 import java.io.IOException;
 import java.util.Objects;
+
+import static chess.ChessGame.TeamColor.WHITE;
 
 
 @WebSocket
@@ -30,31 +32,30 @@ public class WebSocketHandler {
     private final SqlAuthDao authDao = SqlAuthDao.getInstance();
     private final SqlGameDao gameDao = SqlGameDao.getInstance();
 
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
-        System.out.println("WebSocket connected: " + session);
-    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         String username = null;
         try {
             GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+            builder.registerTypeAdapter(UserGameCommand.class, new CommandAdapter());
             Gson gson = builder.create();
 
             UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
             username = getUsername(command.getAuthToken());
+            if(username == null){
+                throw new UnauthorizedException("Error: unauthorized");
+            }
 
             switch (command.getCommandType()) {
                 case CONNECT -> connect(username, session, command);
                 case MAKE_MOVE -> makeMove(username, command);
-                case LEAVE -> closeConnection(username, session, command);
+                case LEAVE -> closeConnection(username, command);
                 case RESIGN -> resign(username, session, command);
 
             }
         } catch (Throwable ex) {
-            var error = new Error(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage());
+            var error = new Error(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
             connections.configure(username, error);
         }
     }
@@ -62,7 +63,23 @@ public class WebSocketHandler {
     private void resign(String username, Session session, UserGameCommand command) {
     }
 
-    private void closeConnection(String username, Session session, UserGameCommand command) {
+    private void closeConnection(String visitorName, UserGameCommand command) throws DataAccessException, IOException {
+        connections.remove(visitorName);
+        int gameId = command.getGameID();
+        GameData gameData = gameDao.getGame(gameId);
+
+        if(Objects.equals(gameData.whiteUsername(), visitorName)){
+            gameDao.updateUser(gameId, null, "WHITE");
+
+        }else if(Objects.equals(gameData.blackUsername(), visitorName)){
+            gameDao.updateUser(gameId, null, "BLACK");
+
+        }
+
+        String message = String.format("%s has left the game.", visitorName);
+
+        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(visitorName, notification, command.getGameID());
     }
 
     private void makeMove(String visitorName, UserGameCommand command) throws ResponseException, IOException {
@@ -71,30 +88,34 @@ public class WebSocketHandler {
             GameData gameData = gameDao.getGame(gameId);
             ChessGame game = gameData.game();
             ChessMove move = command.getChessMove();
-            game.makeMove(command.getChessMove());
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+            ChessPiece piece = game.getBoard().getPiece(start);
+            if(game.getGameStatus() == ChessGame.Status.GAME_OVER){
+                throw new InvalidMoveException("Error: Game is over");
+            }else{
+                game.makeMove(command.getChessMove());
+            }
             gameDao.updateGame(gameId, game);
 
             ChessGame.TeamColor teamColor = null;
-            String message = null;
+            String message;
 
-            if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+            if(game.isInCheckmate(WHITE)){
                 message = gameData.whiteUsername() + " is in checkmate.";
             }else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
                 message = gameData.blackUsername() + " is in checkmate.";
-            }else if(game.isInCheck(ChessGame.TeamColor.WHITE)){
+            }else if(game.isInCheck(WHITE)){
                 message = gameData.whiteUsername() + " is in check.";
             }else if(game.isInCheck(ChessGame.TeamColor.BLACK)){
                 message = gameData.blackUsername() + " is in check.";
-            }else if(game.isInStalemate(ChessGame.TeamColor.WHITE)){
+            }else if(game.isInStalemate(WHITE)){
                 message = gameData.whiteUsername() + " is in stalemate.";
             }else if(game.isInStalemate(ChessGame.TeamColor.BLACK)){
                 message = gameData.blackUsername() + " is in stalemate.";
             }else{
-                ChessPosition start = move.getStartPosition();
-                ChessPosition end = move.getEndPosition();
                 String first = positionTranslator(start);
                 String last = positionTranslator(end);
-                ChessPiece piece = game.getBoard().getPiece(start);
                 message = String.format("%s moves from %s to %s", piece, first, last);
             }
 

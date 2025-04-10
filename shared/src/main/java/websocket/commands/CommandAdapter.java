@@ -36,9 +36,9 @@ public class CommandAdapter extends TypeAdapter<UserGameCommand> {
                 while (jsonReader.hasNext()) {
                     String name = jsonReader.nextName();
                     switch (name) {
-                        case "type" -> type = UserGameCommand.CommandType.valueOf(jsonReader.nextString());
+                        case "commandType" -> type = UserGameCommand.CommandType.valueOf(jsonReader.nextString());
                         case "authToken" -> authToken = jsonReader.nextString();
-                        case "gameId" -> gameId = jsonReader.nextInt();
+                        case "gameID" -> gameId = jsonReader.nextInt();
                         case "chessMove" -> chessMove = gson.fromJson(jsonReader, ChessMove.class);
                     }
                 }

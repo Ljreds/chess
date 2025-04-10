@@ -33,7 +33,7 @@ public class PreLoginClient extends Client {
                 case "login", "l" -> login(params);
                 case "quit", "q" -> "quit";
                 case "h", "help" -> help();
-                default -> throw new IllegalStateException("Unexpected value: " + cmd);
+                default -> throw new IllegalStateException("Invalid command: " + cmd + ". Type 'help' for commands");
             };
         }catch(ArrayIndexOutOfBoundsException ex) {
             return "Error: Some inputs left blank";

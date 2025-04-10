@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+import static chess.ChessGame.Status.GAME_OVER;
+import static chess.ChessGame.Status.INGAME;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -14,12 +17,25 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard gameBoard;
+    private Status gameStatus = INGAME;
+
+
+    public Status getGameStatus() {
+        return gameStatus;
+    }
+
+
 
     public ChessGame() {
         this.gameBoard = new ChessBoard();
         gameBoard.resetBoard();
         this.teamTurn = TeamColor.WHITE;
 
+    }
+
+    public enum Status{
+        GAME_OVER,
+        INGAME
     }
 
     /**
@@ -102,16 +118,29 @@ public class ChessGame {
         if(movePiece != null) {
             if (invalidHandler(movePiece)) {
                 for (ChessMove validMove : validMoves) {
-                    if (move.equals(validMove) && movePiece.getTeamColor() == teamTurn) {
-                        confirmMove(move, movePiece);
-                        TeamColor color = switchTurn(movePiece.getTeamColor());
-                        setTeamTurn(color);
+                    if (move.equals(validMove)) {
+                        if(teamColor(move, movePiece)){
+                            return;
+                        }
+
                     }
 
                 }
             }
         }
         throw new InvalidMoveException("Error: Invalid Move");
+    }
+
+
+    private boolean teamColor(ChessMove move, ChessPiece piece) throws InvalidMoveException {
+        if (piece.getTeamColor() == teamTurn) {
+            confirmMove(move, piece);
+            TeamColor color = switchTurn(piece.getTeamColor());
+            setTeamTurn(color);
+            return true;
+        }else{
+            throw new InvalidMoveException("It is not your turn.");
+        }
     }
 
     private boolean invalidHandler(ChessPiece piece) throws InvalidMoveException {
@@ -215,7 +244,10 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         Collection<ChessPiece> pieceWithMoves = new ArrayList<>();
         if (isInCheck(teamColor)){
-            return searchPieces(teamColor, pieceWithMoves);
+           if(searchPieces(teamColor, pieceWithMoves)){
+               gameStatus = GAME_OVER;
+               return true;
+           }
         }
         return false;
     }
@@ -247,7 +279,10 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         Collection<ChessPiece> pieceWithMoves = new ArrayList<>();
         if(!isInCheck(teamColor)) {
-            return searchPieces(teamColor, pieceWithMoves);
+            if(searchPieces(teamColor, pieceWithMoves)){
+                gameStatus = GAME_OVER;
+                return true;
+            }
         }
         return false;
     }

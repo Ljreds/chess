@@ -4,7 +4,7 @@ import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import facade.ResponseException;
-import ui.ChessUi;
+import websocket.commands.CommandAdapter;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.MessageAdapter;
@@ -18,8 +18,6 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
 
     Session session;
-    private ServerMessage.ServerMessageType type;
-    private final ChessUi ui = new ChessUi();
     private final NotificationHandler notificationHandler;
 
 
@@ -62,7 +60,7 @@ public class WebSocketFacade extends Endpoint {
     public void connect(String authToken, Integer gameId) throws ResponseException {
         try {
             GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+            builder.registerTypeAdapter(UserGameCommand.class, new CommandAdapter());
             Gson gson = builder.create();
 
             var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
@@ -75,11 +73,25 @@ public class WebSocketFacade extends Endpoint {
     public void makeMove(String authToken, Integer gameId, ChessMove move) throws ResponseException {
         try {
             GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+            builder.registerTypeAdapter(UserGameCommand.class, new CommandAdapter());
             Gson gson = builder.create();
 
-            var command = new MakeMoveCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId, move);
+            var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameId, move);
             this.session.getBasicRemote().sendText(gson.toJson(command));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void leave(String authToken, Integer gameId) throws ResponseException {
+        try {
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(UserGameCommand.class, new CommandAdapter());
+            Gson gson = builder.create();
+
+            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameId);
+            this.session.getBasicRemote().sendText(gson.toJson(command));
+            this.session.close();
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -90,7 +102,7 @@ public class WebSocketFacade extends Endpoint {
             case NOTIFICATION -> notify(message.getMessage());
             case LOAD_GAME -> loadGame(message.getChessGame());
             case ERROR -> error(message.getErrorMessage());
-        };
+        }
     }
 
     private void notify(String message) {
@@ -102,8 +114,7 @@ public class WebSocketFacade extends Endpoint {
 
     }
 
-    private void error(String errorMessage){
-
+    private void error(String errorMessage){notificationHandler.notify(errorMessage);
     }
 
 }

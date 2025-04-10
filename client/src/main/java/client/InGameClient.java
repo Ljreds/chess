@@ -41,7 +41,7 @@ public class InGameClient extends Client {
                 case "resign" -> resign();
                 case "quit", "q" -> "quit";
                 case "h", "help" -> help();
-                default -> throw new IllegalStateException("Unexpected value: " + cmd);
+                default -> throw new IllegalStateException("Invalid Command: " + cmd + ". Type 'help' for commands");
             };
         }catch(ArrayIndexOutOfBoundsException ex) {
             return "Error: Some inputs left blank";
@@ -54,8 +54,10 @@ public class InGameClient extends Client {
         return null;
     }
 
-    private String leave() {
-        return null;
+    private String leave() throws ResponseException {
+        ws.leave(authToken, saveGameId);
+        state = SIGNEDIN;
+        return "";
     }
 
     private String redraw() {
@@ -72,7 +74,10 @@ public class InGameClient extends Client {
             try {
                 ChessPosition startPosition = positionTranslator(params[0]);
                 ChessPosition endPosition = positionTranslator(params[1]);
-                ChessPiece.PieceType promotion = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+                ChessPiece.PieceType promotion = null;
+                if (params.length == 3) {
+                    promotion = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+                }
                 ChessMove move = new ChessMove(startPosition, endPosition, promotion);
                 ws.makeMove(authToken, saveGameId, move);
                 return "";
@@ -102,8 +107,9 @@ public class InGameClient extends Client {
         char file = position.charAt(0);
         char rank = position.charAt(1);
         int col = file - 'a' + 1;
+        int row = rank - '0';
 
-        return new ChessPosition(rank, col);
+        return new ChessPosition(row, col);
 
 
     }

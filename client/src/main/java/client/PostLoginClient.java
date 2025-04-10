@@ -46,7 +46,7 @@ public class PostLoginClient extends Client {
                 case "spectate", "s" -> spectate(params);
                 case "quit", "q" -> "quit";
                 case "h", "help" -> help();
-                default -> throw new IllegalStateException("Unexpected value: " + cmd);
+                default -> throw new IllegalStateException("Invalid Command: " + cmd + ". Type 'help' for commands");
             };
         }catch(ArrayIndexOutOfBoundsException ex) {
             return "Error: Some inputs left blank";
