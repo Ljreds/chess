@@ -31,14 +31,19 @@ public class CommandAdapter extends TypeAdapter<UserGameCommand> {
 
             jsonReader.beginObject();
 
-            while (jsonReader.hasNext()) {
-                String name = jsonReader.nextName();
-                switch (name) {
-                    case "type" -> type = UserGameCommand.CommandType.valueOf(jsonReader.nextString());
-                    case "authToken" -> authToken = jsonReader.nextString();
-                    case "gameId" -> gameId = jsonReader.nextInt();
-                    case "chessMove" -> chessMove = gson.fromJson(jsonReader, ChessMove.class);
+
+            try {
+                while (jsonReader.hasNext()) {
+                    String name = jsonReader.nextName();
+                    switch (name) {
+                        case "type" -> type = UserGameCommand.CommandType.valueOf(jsonReader.nextString());
+                        case "authToken" -> authToken = jsonReader.nextString();
+                        case "gameId" -> gameId = jsonReader.nextInt();
+                        case "chessMove" -> chessMove = gson.fromJson(jsonReader, ChessMove.class);
+                    }
                 }
+            }catch(Throwable ex){
+                System.out.println(ex.getMessage());
             }
 
             jsonReader.endObject();

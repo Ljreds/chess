@@ -1,6 +1,8 @@
 package client;
 
 
+import chess.ChessGame;
+import ui.ChessUi;
 import websocket.NotificationHandler;
 
 import java.util.Scanner;
@@ -31,8 +33,10 @@ public class Repl implements NotificationHandler {
                 System.out.println(result + SET_TEXT_COLOR_BLUE);
                 if(client.getState() == State.SIGNEDIN){
                     client = PostLoginClient.getInstance();
-                }else{
+                }else if(client.getState() == State.SIGNEDOUT){
                     client = PreLoginClient.getInstance();
+                }else{
+                    client = InGameClient.getInstance();
                 }
             }catch(Throwable ex) {
                 var msg = ex.getMessage();
@@ -47,6 +51,14 @@ public class Repl implements NotificationHandler {
     public void notify(String message) {
         System.out.println(SET_TEXT_COLOR_RED + message);
         printPrompt();
+    }
+
+    @Override
+    public void load(ChessGame chess){
+        ChessGame.TeamColor color = Client.getTeamColor();
+        ChessUi ui = new ChessUi();
+        ui.createBoard(chess, color);
+
     }
 
     private void printPrompt() {

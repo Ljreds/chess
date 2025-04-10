@@ -1,9 +1,9 @@
 package client;
 
+import chess.ChessGame;
 import facade.ResponseException;
 import facade.ServerFacade;
 import websocket.NotificationHandler;
-import websocket.WebSocketCommunicator;
 import websocket.WebSocketFacade;
 
 import java.util.HashMap;
@@ -15,11 +15,17 @@ public class Client {
     protected static String authToken;
     protected ServerFacade server;
     protected static String serverUrl;
-    protected static WebSocketCommunicator ws;
+    protected static WebSocketFacade ws;
     protected State state = SIGNEDOUT;
     protected NotificationHandler notificationHandler = null;
     protected static final Map<Integer, Integer> gameIds = new HashMap<>();
+    protected static ChessGame.TeamColor teamColor = null;
+    protected static int saveGameId;
+    protected static ChessGame game = null;
 
+    public static ChessGame.TeamColor getTeamColor() {
+        return teamColor;
+    }
 
     public Client(String serverUrl) {
         Client.serverUrl = serverUrl;

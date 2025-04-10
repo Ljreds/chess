@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import facade.ResponseException;
 import facade.ServerFacade;
 import model.GameData;
@@ -7,17 +8,18 @@ import request.*;
 import response.*;
 import ui.ChessUi;
 import websocket.NotificationHandler;
-import websocket.WebSocketCommunicator;
+import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 
-import static client.State.SIGNEDIN;
-import static client.State.SIGNEDOUT;
+import static chess.ChessGame.TeamColor.WHITE;
+import static client.State.*;
 
 public class PostLoginClient extends Client {
 
     private final ChessUi chessUi;
-    private static final PostLoginClient INSTANCE = new PostLoginClient();
+    private static PostLoginClient instance;
+
 
     private PostLoginClient(){
         super(serverUrl);
@@ -106,12 +108,16 @@ public class PostLoginClient extends Client {
             try {
                 int gameId = Integer.parseInt(params[1]);
                 String color = params[0].toUpperCase();
+                teamColor = ChessGame.TeamColor.valueOf(color);
                 JoinRequest request = new JoinRequest(color, gameIds.get(gameId), authToken);
                 JoinResult result = server.joinGame(request);
-                ws = new WebSocketCommunicator(serverUrl);
-                ws.send("The test");
 
-                chessUi.createBoard(result.chessGame(), color);
+                saveGameId = result.gameId();
+
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.connect(authToken, result.gameId());
+                game = result.chessGame();
+                state = INGAME;
 
                 return "";
 
@@ -131,10 +137,15 @@ public class PostLoginClient extends Client {
                 int gameId = Integer.parseInt(params[0]);
                 JoinRequest request = new JoinRequest("SPECTATE", gameIds.get(gameId), authToken);
                 JoinResult result = server.joinGame(request);
+                teamColor = WHITE;
 
-                state = SIGNEDIN;
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.connect(authToken, result.gameId());
+                game = result.chessGame();
 
-                chessUi.createBoard(result.chessGame(), "WHITE");
+                state = INGAME;
+
+                chessUi.createBoard(result.chessGame(), WHITE);
 
                 return "";
 
@@ -160,9 +171,6 @@ public class PostLoginClient extends Client {
                """;
     }
 
-    public static synchronized PostLoginClient getInstance(){
-        return INSTANCE;
-    }
 
     public NotificationHandler getNotificationHandler() {
         return notificationHandler;
@@ -170,5 +178,13 @@ public class PostLoginClient extends Client {
 
     public void setNotificationHandler(NotificationHandler notificationHandler) {
         this.notificationHandler = notificationHandler;
+    }
+
+    public static synchronized PostLoginClient getInstance(){
+        if(instance == null){
+            instance = new PostLoginClient();
+        }
+
+        return instance;
     }
 }

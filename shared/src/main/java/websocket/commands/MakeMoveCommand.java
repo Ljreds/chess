@@ -19,6 +19,7 @@ public class MakeMoveCommand extends UserGameCommand{
         this.chessMove = chessMove;
     }
 
+    @Override
     public ChessMove getChessMove() {
         return chessMove;
     }

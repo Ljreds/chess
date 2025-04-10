@@ -12,13 +12,15 @@ import chess.ChessPiece.PieceType;
 import chess.ChessGame.TeamColor;
 import model.GameData;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 import static ui.EscapeSequences.*;
 
 public class ChessUi {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
 
 
-    public void createBoard(ChessGame game, String playerColor){
+    public void createBoard(ChessGame game, TeamColor playerColor){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
@@ -53,12 +55,12 @@ public class ChessUi {
 
     }
 
-    private static void drawHeaders(PrintStream out, String playerColor) {
+    private static void drawHeaders(PrintStream out, TeamColor playerColor) {
 
         setRed(out);
 
         List<String> headers = new ArrayList<>(List.of("a", "b", "c", "d", "e", "f", "g", "h"));
-        if(Objects.equals(playerColor, "BLACK")){
+        if(Objects.equals(playerColor, BLACK)){
             Collections.reverse(headers);
         }
         out.print(EMPTY);
@@ -82,13 +84,13 @@ public class ChessUi {
         setRed(out);
     }
 
-    private static void drawBoard(PrintStream out, String playerColor, ChessBoard chess){
+    private static void drawBoard(PrintStream out, TeamColor playerColor, ChessBoard chess){
         List<Integer> ranks = new ArrayList<>();
         for(int i = 1; i <= 8; i++){
             ranks.add(i);
 
         }
-       if(Objects.equals(playerColor, "WHITE")){
+       if(Objects.equals(playerColor, WHITE)){
            whitePerspective(out, chess, ranks);
        }else{
            blackPerspective(out, chess, ranks);
@@ -169,7 +171,7 @@ public class ChessUi {
     private static void printPiece(PrintStream out, String bgColor, ChessPiece piece){
         String strPiece = SYMBOLS.get(piece.getTeamColor()).get(piece.getPieceType());
         out.print(bgColor);
-        if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+        if(piece.getTeamColor() == WHITE){
             out.print(SET_TEXT_COLOR_WHITE);
         }else{
             out.print(SET_TEXT_COLOR_BLACK);
@@ -179,7 +181,7 @@ public class ChessUi {
     }
 
     private static final Map<TeamColor, Map<ChessPiece.PieceType, String>> SYMBOLS = Map.of(
-            TeamColor.WHITE, Map.of(
+            WHITE, Map.of(
                     PieceType.KING, " ♔ ",
                     PieceType.QUEEN, " ♕ ",
                     PieceType.BISHOP, " ♗ ",
@@ -187,7 +189,7 @@ public class ChessUi {
                     PieceType.ROOK, " ♖ ",
                     PieceType.PAWN, " ♙ "
             ),
-            TeamColor.BLACK, Map.of(
+            BLACK, Map.of(
                     PieceType.KING, " ♚ ",
                     PieceType.QUEEN, " ♛ ",
                     PieceType.BISHOP, " ♝ ",

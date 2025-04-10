@@ -15,9 +15,10 @@ public class Notification extends ServerMessage {
         this.message = message;
     }
 
+
     @Override
-    public ResponseException getException() {
-        return null;
+    public String getErrorMessage() {
+        return "";
     }
 
     @Override

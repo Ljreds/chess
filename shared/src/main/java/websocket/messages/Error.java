@@ -1,23 +1,22 @@
 package websocket.messages;
 
 import chess.ChessGame;
-import facade.ResponseException;
 
 
 public class Error extends ServerMessage {
 
-    private final ResponseException exception;
+    private final String errorMessage;
 
 
-    public Error(ServerMessageType type, ResponseException exception){
+    public Error(ServerMessageType type, String errorMessage){
         super(type);
         this.serverMessageType = type;
-        this.exception = exception;
+        this.errorMessage = errorMessage;
     }
 
     @Override
-    public ResponseException getException() {
-        return exception;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     @Override

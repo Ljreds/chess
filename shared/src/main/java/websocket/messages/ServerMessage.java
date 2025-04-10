@@ -28,7 +28,8 @@ public abstract class ServerMessage {
         return this.serverMessageType;
     }
 
-    public abstract ResponseException getException();
+
+    public abstract String getErrorMessage();
 
     public abstract ChessGame getChessGame();
 

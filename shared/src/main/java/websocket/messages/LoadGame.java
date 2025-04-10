@@ -6,30 +6,30 @@ import facade.ResponseException;
 
 public class LoadGame extends ServerMessage {
 
-    private final ChessGame chessGame;
-    private final String message;
+    private final ChessGame game;
 
-    public LoadGame(ServerMessageType type, String message, ChessGame chess) {
+    public LoadGame(ServerMessageType type, ChessGame chess) {
         super(type);
         this.serverMessageType = type;
-        this.message = message;
-        this.chessGame = chess;
+        this.game = chess;
     }
 
+
     @Override
-    public ResponseException getException() {
-        return null;
+    public String getErrorMessage() {
+        return "";
     }
 
     @Override
     public ChessGame getChessGame() {
-        return chessGame;
+        return game;
     }
 
     @Override
     public String getMessage() {
-        return message;
+        return "";
     }
+
 
     @Override
     public boolean equals(Object o) {

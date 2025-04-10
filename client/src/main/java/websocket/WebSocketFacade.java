@@ -1,9 +1,11 @@
 package websocket;
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import facade.ResponseException;
 import ui.ChessUi;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.MessageAdapter;
 import websocket.messages.ServerMessage;
@@ -18,15 +20,15 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     private ServerMessage.ServerMessageType type;
     private final ChessUi ui = new ChessUi();
+    private final NotificationHandler notificationHandler;
 
 
 
-    public WebSocketFacade(String url, NotificationHandler handler) throws ResponseException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+        this.notificationHandler = notificationHandler;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
-
-            System.out.println(socketURI);
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -40,8 +42,7 @@ public class WebSocketFacade extends Endpoint {
                     Gson gson = builder.create();
 
                     ServerMessage notification = gson.fromJson(message, ServerMessage.class);
-                    String notify = eval(notification);
-                    handler.notify(notify);
+                    eval(notification);
 
 
                 }
@@ -51,21 +52,12 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public ServerMessage.ServerMessageType getType() {
-        return type;
-    }
 
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        System.out.println("WebSocket opened: " + session.getId());
     }
 
-    public void test() throws IOException {
-        System.out.println("Calling Test");
-        System.out.println("Session open: " + session.isOpen());
-        this.session.getBasicRemote().sendText("test");
-    }
 
     public void connect(String authToken, Integer gameId) throws ResponseException {
         try {
@@ -80,22 +72,38 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    private String eval(ServerMessage message){
-        return switch (message.getServerMessageType()){
-            case NOTIFICATION -> message.getMessage();
-            case LOAD_GAME -> loadGame(message.getMessage(), message.getChessGame());
-            case ERROR -> error(message.getException());
+    public void makeMove(String authToken, Integer gameId, ChessMove move) throws ResponseException {
+        try {
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+            Gson gson = builder.create();
+
+            var command = new MakeMoveCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId, move);
+            this.session.getBasicRemote().sendText(gson.toJson(command));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    private void eval(ServerMessage message){
+        switch (message.getServerMessageType()){
+            case NOTIFICATION -> notify(message.getMessage());
+            case LOAD_GAME -> loadGame(message.getChessGame());
+            case ERROR -> error(message.getErrorMessage());
         };
     }
 
-    private String loadGame(String message, ChessGame game){
-        ui.createBoard(game, "WHITE");
-        return null;
+    private void notify(String message) {
+        notificationHandler.notify(message);
+    }
+
+    private void loadGame(ChessGame game){
+        notificationHandler.load(game);
 
     }
 
-    private String error(ResponseException ex){
-        return null;
+    private void error(String errorMessage){
+
     }
 
 }

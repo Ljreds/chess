@@ -44,4 +44,26 @@ public class ConnectionManager {
             connections.remove(c.visitorName);
         }
     }
+
+    public void configure(String visitorName, ServerMessage loadGame) throws IOException {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+        Gson gson = builder.create();
+
+        var removeList = new ArrayList<Connection>();
+        for (var c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (c.visitorName.equals(visitorName)){
+                    c.send(gson.toJson(loadGame));
+                }
+            } else {
+                removeList.add(c);
+            }
+        }
+
+        // Clean up any connections that were left open.
+        for (var c : removeList) {
+            connections.remove(c.visitorName);
+        }
+    }
 }

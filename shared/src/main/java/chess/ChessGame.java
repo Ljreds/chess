@@ -100,20 +100,31 @@ public class ChessGame {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         ChessPiece movePiece = gameBoard.getPiece(move.getStartPosition());
         if(movePiece != null) {
-            if (!isInCheckmate(movePiece.getTeamColor()) && !isInStalemate(movePiece.getTeamColor())) {
+            if (invalidHandler(movePiece)) {
                 for (ChessMove validMove : validMoves) {
                     if (move.equals(validMove) && movePiece.getTeamColor() == teamTurn) {
-                       confirmMove(move,movePiece);
+                        confirmMove(move, movePiece);
                         TeamColor color = switchTurn(movePiece.getTeamColor());
                         setTeamTurn(color);
-                        return;
                     }
 
                 }
             }
         }
-        throw new InvalidMoveException();
+        throw new InvalidMoveException("Error: Invalid Move");
     }
+
+    private boolean invalidHandler(ChessPiece piece) throws InvalidMoveException {
+        if(isInCheckmate(piece.getTeamColor())){
+            throw new InvalidMoveException(piece.getTeamColor().toString() + "is in checkmate.");
+        }else if(isInStalemate(piece.getTeamColor())){
+            throw new InvalidMoveException(piece.getTeamColor().toString() + "is in stalemate.");
+        }else{
+            return true;
+        }
+
+    }
+
 
     public void confirmMove(ChessMove move, ChessPiece movePiece){
         if(movePiece.getPieceType() == ChessPiece.PieceType.PAWN){

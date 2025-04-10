@@ -14,7 +14,7 @@ import static client.State.SIGNEDIN;
 
 public class PreLoginClient extends Client {
 
-    private static final PreLoginClient INSTANCE = new PreLoginClient();
+    private static PreLoginClient instance;
 
     private PreLoginClient() {
         super(serverUrl);
@@ -81,7 +81,12 @@ public class PreLoginClient extends Client {
     }
 
     public static synchronized PreLoginClient getInstance(){
-       return INSTANCE;
+        if(instance == null){
+            instance = new PreLoginClient();
+        }
+
+        return instance;
     }
+
 
 }

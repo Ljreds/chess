@@ -28,17 +28,17 @@ public class MessageAdapter extends TypeAdapter<ServerMessage> {
             ServerMessage.ServerMessageType type = null;
             String message = null;
             ChessGame chess = null;
-            ResponseException exception = null;
+            String exception = null;
 
             jsonReader.beginObject();
 
             while (jsonReader.hasNext()) {
                 String name = jsonReader.nextName();
                 switch (name) {
-                    case "type" -> type = ServerMessage.ServerMessageType.valueOf(jsonReader.nextString());
+                    case "serverMessageType" -> type = ServerMessage.ServerMessageType.valueOf(jsonReader.nextString());
                     case "message" -> message = jsonReader.nextString();
-                    case "chess" -> chess = gson.fromJson(jsonReader, ChessGame.class);
-                    case "exception" -> exception = gson.fromJson(jsonReader, ResponseException.class);
+                    case "game" -> chess = gson.fromJson(jsonReader, ChessGame.class);
+                    case "errorMessage" -> exception = jsonReader.nextString();
                 }
             }
 
@@ -50,7 +50,7 @@ public class MessageAdapter extends TypeAdapter<ServerMessage> {
                 return switch (type) {
                     case ERROR -> new Error(type, exception);
                     case NOTIFICATION -> new Notification(type, message);
-                    case LOAD_GAME -> new LoadGame(type, message, chess);
+                    case LOAD_GAME -> new LoadGame(type, chess);
                 };
             }
         }
