@@ -69,6 +69,8 @@ public class InGameClient extends Client {
     private String highlight(String[] params) {
         if(params.length == 1){
             ChessPosition position = positionTranslator(params[0]);
+            chessUi.createHighlight(game, teamColor, position);
+            return "";
 
         }else{
             return "Error: Parameters are incorrect";

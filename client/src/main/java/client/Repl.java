@@ -57,6 +57,7 @@ public class Repl implements NotificationHandler {
     public void load(ChessGame chess){
         ChessGame.TeamColor color = Client.getTeamColor();
         ChessUi ui = new ChessUi();
+        Client.setGame(chess);
         System.out.println();
         ui.createBoard(chess, color);
         printPrompt();

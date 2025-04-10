@@ -139,6 +139,8 @@ public class PostLoginClient extends Client {
                 JoinResult result = server.joinGame(request);
                 teamColor = WHITE;
 
+                saveGameId = result.gameId();
+
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
                 ws.connect(authToken, result.gameId());
                 game = result.chessGame();

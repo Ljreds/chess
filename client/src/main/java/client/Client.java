@@ -21,6 +21,11 @@ public class Client {
     protected static final Map<Integer, Integer> gameIds = new HashMap<>();
     protected static ChessGame.TeamColor teamColor = null;
     protected static int saveGameId;
+
+    public static void setGame(ChessGame game) {
+        Client.game = game;
+    }
+
     protected static ChessGame game = null;
 
     public static ChessGame.TeamColor getTeamColor() {

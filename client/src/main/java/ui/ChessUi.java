@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +29,13 @@ public class ChessUi {
     }
 
     public void createHighlight(ChessGame game, TeamColor playerColor, ChessPosition position){
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
+        out.print(ERASE_SCREEN);
+
+        drawHeaders(out, playerColor);
+        drawHighlight(out, playerColor, game, position);
+        drawHeaders(out, playerColor);
     }
 
     public void createList(Collection<GameData> list){
@@ -101,6 +104,8 @@ public class ChessUi {
        }
     }
 
+
+
     private static void blackPerspective(PrintStream out, ChessBoard chess, List<Integer> ranks){
 
         for(int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; squareRow++){
@@ -108,9 +113,9 @@ public class ChessUi {
             for(int squareCol = BOARD_SIZE_IN_SQUARES; squareCol > 0; squareCol--){
                 ChessPiece piece = chess.getPiece(new ChessPosition(squareRow + 1, squareCol));
                 if(squareRow % 2 == 0){
-                    whiteFirst(out, squareCol, piece);
+                    whiteFirst(out, squareCol, piece, false);
                 }else{
-                    blackFirst(out, squareCol, piece);
+                    blackFirst(out, squareCol, piece, false);
                 }
             }
             drawRanks(out, String.valueOf(ranks.get(squareRow)));
@@ -125,9 +130,9 @@ public class ChessUi {
             for(int squareCol = 0; squareCol < 8; squareCol++) {
                 ChessPiece piece = chess.getPiece(new ChessPosition(squareRow, squareCol + 1));
                 if (squareRow % 2 == 0) {
-                    whiteFirst(out, squareCol, piece);
+                    whiteFirst(out, squareCol, piece, false);
                 }else{
-                    blackFirst(out, squareCol, piece);
+                    blackFirst(out, squareCol, piece, false);
                 }
             }
             drawRanks(out, String.valueOf(ranks.get(squareRow - 1)));
@@ -135,42 +140,144 @@ public class ChessUi {
         }
     }
 
-
-    private static void whiteFirst(PrintStream out, int squareCol, ChessPiece piece){
-            if (squareCol % 2 == 0) {
-                if(piece != null){
-                   printPiece(out, SET_BG_COLOR_TAN, piece);
-                }else {
-                    setTan(out);
-                    out.print(EMPTY);
-                }
-            } else {
-                if(piece != null){
-                    printPiece(out, SET_BG_COLOR_BROWN, piece);
-                }else {
-                    setBrown(out);
-                    out.print(EMPTY);
-                }
-            }
-    }
-    private static void blackFirst(PrintStream out, int squareCol, ChessPiece piece){
+    private static void whiteFirst(PrintStream out, int squareCol, ChessPiece piece, boolean valid){
+        var lightBg = SET_BG_COLOR_TAN;
+        String darkBg = SET_BG_COLOR_BROWN;
+        String lightTxt = SET_TEXT_COLOR_TAN;
+        String darkTxt = SET_TEXT_COLOR_BROWN;
+        if(valid){
+            lightBg = SET_BG_COLOR_GREEN;
+            darkBg = SET_BG_COLOR_DARK_GREEN;
+            lightTxt = SET_TEXT_COLOR_GREEN;
+            darkTxt = SET_TEXT_COLOR_DARK_GREEN;
+        }
         if (squareCol % 2 == 0) {
             if(piece != null){
-                printPiece(out, SET_BG_COLOR_BROWN, piece);
+                printPiece(out, lightBg, piece);
             }else {
-                setBrown(out);
+                setLight(out, lightBg, lightTxt);
                 out.print(EMPTY);
             }
         } else {
             if(piece != null){
-                printPiece(out, SET_BG_COLOR_TAN, piece);
+                printPiece(out, darkBg, piece);
             }else {
-                setTan(out);
+                setDark(out, darkBg, darkTxt);
                 out.print(EMPTY);
             }
         }
     }
 
+    private static void blackFirst(PrintStream out, int squareCol, ChessPiece piece, boolean valid){
+        String lightBg = SET_BG_COLOR_TAN;
+        String darkBg = SET_BG_COLOR_BROWN;
+        String lightTxt = SET_TEXT_COLOR_TAN;
+        String darkTxt = SET_TEXT_COLOR_BROWN;
+        if(valid){
+            lightBg = SET_BG_COLOR_GREEN;
+            darkBg = SET_BG_COLOR_DARK_GREEN;
+            lightTxt = SET_TEXT_COLOR_GREEN;
+            darkTxt = SET_TEXT_COLOR_DARK_GREEN;
+        }
+        if (squareCol % 2 == 0) {
+            if(piece != null){
+                printPiece(out, darkBg, piece);
+            }else {
+                setDark(out, darkBg, darkTxt);
+                out.print(EMPTY);
+            }
+        } else {
+            if(piece != null){
+                printPiece(out, lightBg, piece);
+            }else {
+                setLight(out, lightBg, lightTxt);
+                out.print(EMPTY);
+            }
+        }
+    }
+
+    private static void drawHighlight(PrintStream out, TeamColor playerColor, ChessGame chess, ChessPosition position){
+        List<Integer> ranks = new ArrayList<>();
+        for(int i = 1; i <= 8; i++){
+            ranks.add(i);
+
+        }
+        if(Objects.equals(playerColor, WHITE)){
+            whiteHighlight(out, chess, ranks, position);
+        }else{
+            blackHighlight(out, chess, ranks, position);
+        }
+    }
+
+    private static void whiteHighlight(PrintStream out, ChessGame chess, List<Integer> ranks, ChessPosition position){
+        ChessBoard board = chess.getBoard();
+        Collection<ChessMove> moves = chess.validMoves(position);
+
+        for(int squareRow = BOARD_SIZE_IN_SQUARES; squareRow > 0; squareRow--){
+            drawRanks(out, String.valueOf(ranks.get(squareRow - 1)));
+            for(int squareCol = 0; squareCol < 8; squareCol++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(squareRow, squareCol + 1));
+                if(selectPiece(squareRow, squareCol + 1, moves)){
+                    drawHlPiece(out, piece);
+                }
+                else if (squareRow % 2 == 0) {
+                    whiteFirst(out, squareCol, piece, validMove(squareRow, squareCol + 1, moves));
+                }else{
+                    blackFirst(out, squareCol, piece, validMove(squareRow, squareCol + 1, moves));
+                }
+            }
+            drawRanks(out, String.valueOf(ranks.get(squareRow - 1)));
+            out.println();
+        }
+    }
+
+    private static void blackHighlight(PrintStream out, ChessGame chess, List<Integer> ranks, ChessPosition position){
+        ChessBoard board = chess.getBoard();
+        Collection<ChessMove> moves = chess.validMoves(position);
+
+        for(int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; squareRow++){
+            drawRanks(out, String.valueOf(ranks.get(squareRow)));
+            for(int squareCol = BOARD_SIZE_IN_SQUARES; squareCol > 0; squareCol--){
+                ChessPiece piece = board.getPiece(new ChessPosition(squareRow + 1, squareCol));
+                if(selectPiece(squareRow + 1, squareCol, moves)){
+                    drawHlPiece(out, piece);
+                }
+                else if (squareRow % 2 == 0) {
+                    whiteFirst(out, squareCol, piece, validMove(squareRow + 1, squareCol, moves));
+                }else{
+                    blackFirst(out, squareCol, piece, validMove(squareRow + 1, squareCol, moves));
+                }
+            }
+            drawRanks(out, String.valueOf(ranks.get(squareRow)));
+            out.println();
+        }
+    }
+
+    private static void drawHlPiece(PrintStream out, ChessPiece piece){
+        printPiece(out, SET_BG_COLOR_YELLOW, piece);
+    }
+
+    private static boolean validMove(int row, int col, Collection<ChessMove> moves){
+        for(ChessMove move : moves){
+            if(move.getEndPosition().getRow() == row){
+                if(move.getEndPosition().getColumn() == col){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean selectPiece(int row, int col, Collection<ChessMove> moves){
+        for(ChessMove move : moves){
+            if(move.getStartPosition().getRow() == row){
+                if(move.getStartPosition().getColumn() == col){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     private static void printPiece(PrintStream out, String bgColor, ChessPiece piece){
         String strPiece = SYMBOLS.get(piece.getTeamColor()).get(piece.getPieceType());
@@ -220,14 +327,14 @@ public class ChessUi {
         out.print(SET_TEXT_COLOR_RED);
     }
 
-    private static void setBrown(PrintStream out) {
-        out.print(SET_BG_COLOR_BROWN);
-        out.print(SET_TEXT_COLOR_BROWN);
+    private static void setDark(PrintStream out, String bg, String txt) {
+        out.print(bg);
+        out.print(txt);
     }
 
-    private static void setTan(PrintStream out) {
-        out.print(SET_BG_COLOR_TAN);
-        out.print(SET_TEXT_COLOR_TAN);
+    private static void setLight(PrintStream out, String bg, String txt) {
+        out.print(bg);
+        out.print(txt);
     }
 
     private static void resetColor(PrintStream out) {

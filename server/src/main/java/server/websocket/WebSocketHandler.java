@@ -68,7 +68,7 @@ public class WebSocketHandler {
             ChessGame game = gameData.game();
 
             if (!Objects.equals(gameData.whiteUsername(), visitorName) && !Objects.equals(gameData.blackUsername(), visitorName)) {
-                throw new ResponseException(500, "Error: Observer's can't resign");
+                throw new ResponseException(500, "Error: Spectator can't resign");
 
             }
 
@@ -119,10 +119,10 @@ public class WebSocketHandler {
             ChessPosition start = move.getStartPosition();
             ChessPosition end = move.getEndPosition();
             ChessPiece piece = game.getBoard().getPiece(start);
-            String pieceType = piece.toString();
+            String pieceType = piece.getPieceType().toString();
 
             if (!Objects.equals(gameData.whiteUsername(), visitorName) && !Objects.equals(gameData.blackUsername(), visitorName)) {
-                throw new ResponseException(500, "Error: Observer's can't make moves");
+                throw new ResponseException(500, "Error: Spectator can't make moves");
 
             }
 
