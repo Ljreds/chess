@@ -50,8 +50,9 @@ public class InGameClient extends Client {
         }
     }
 
-    private String resign() {
-        return null;
+    private String resign() throws ResponseException {
+        ws.resign(authToken, saveGameId);
+        return "";
     }
 
     private String leave() throws ResponseException {
@@ -66,7 +67,13 @@ public class InGameClient extends Client {
     }
 
     private String highlight(String[] params) {
-        return null;
+        if(params.length == 1){
+            ChessPosition position = positionTranslator(params[0]);
+
+        }else{
+            return "Error: Parameters are incorrect";
+        }
+
     }
 
     private String makeMove(String[] params) throws ResponseException {

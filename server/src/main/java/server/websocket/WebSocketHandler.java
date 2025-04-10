@@ -36,7 +36,7 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        String username = null;
+        String username;
         try {
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(UserGameCommand.class, new CommandAdapter());
@@ -52,16 +52,40 @@ public class WebSocketHandler {
                 case CONNECT -> connect(username, session, command);
                 case MAKE_MOVE -> makeMove(username, command);
                 case LEAVE -> closeConnection(username, command);
-                case RESIGN -> resign(username, session, command);
+                case RESIGN -> resign(username, command);
 
             }
         } catch (Throwable ex) {
             var error = new Error(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
-            connections.configure(username, error);
+            connections.errorTransfer(session, error);
         }
     }
 
-    private void resign(String username, Session session, UserGameCommand command) {
+    private void resign(String visitorName, UserGameCommand command) throws ResponseException {
+        try {
+            int gameId = command.getGameID();
+            GameData gameData = gameDao.getGame(gameId);
+            ChessGame game = gameData.game();
+
+            if (!Objects.equals(gameData.whiteUsername(), visitorName) && !Objects.equals(gameData.blackUsername(), visitorName)) {
+                throw new ResponseException(500, "Error: Observer's can't resign");
+
+            }
+
+            if (game.getGameStatus() == ChessGame.Status.GAME_OVER) {
+                throw new ResponseException(500, "Error: Game is over");
+            } else {
+                game.setGameStatus(ChessGame.Status.GAME_OVER);
+                gameDao.updateGame(gameId, game);
+            }
+
+            String message = String.format("%s has surrendered", visitorName);
+
+            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast("", notification, command.getGameID());
+        }catch(Throwable ex){
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     private void closeConnection(String visitorName, UserGameCommand command) throws DataAccessException, IOException {
@@ -77,7 +101,7 @@ public class WebSocketHandler {
 
         }
 
-        String message = String.format("%s has left the game.", visitorName);
+        String message = String.format("%s has left the game", visitorName);
 
         var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(visitorName, notification, command.getGameID());
@@ -95,6 +119,12 @@ public class WebSocketHandler {
             ChessPosition start = move.getStartPosition();
             ChessPosition end = move.getEndPosition();
             ChessPiece piece = game.getBoard().getPiece(start);
+            String pieceType = piece.toString();
+
+            if (!Objects.equals(gameData.whiteUsername(), visitorName) && !Objects.equals(gameData.blackUsername(), visitorName)) {
+                throw new ResponseException(500, "Error: Observer's can't make moves");
+
+            }
 
             if(Objects.equals(gameData.whiteUsername(), visitorName)){
                 teamColor = WHITE;
@@ -132,7 +162,7 @@ public class WebSocketHandler {
             }else{
                 String first = positionTranslator(start);
                 String last = positionTranslator(end);
-                message = String.format("%s moves from %s to %s", piece, first, last);
+                message = String.format("%s moves from %s to %s", pieceType, first, last);
             }
 
 
@@ -140,7 +170,7 @@ public class WebSocketHandler {
             connections.broadcast("", loadGame, gameId);
 
             var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcast("", notification, command.getGameID());
+            connections.broadcast(visitorName, notification, command.getGameID());
         } catch (DataAccessException ex) {
             throw new ResponseException(500, ex.getMessage());
         } catch(InvalidMoveException ex){

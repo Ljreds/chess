@@ -31,6 +31,10 @@ public class ChessUi {
 
     }
 
+    public void createHighlight(ChessGame game, TeamColor playerColor, ChessPosition position){
+
+    }
+
     public void createList(Collection<GameData> list){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 

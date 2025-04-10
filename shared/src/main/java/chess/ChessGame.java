@@ -143,6 +143,10 @@ public class ChessGame {
         }
     }
 
+    public void setGameStatus(Status gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
     private boolean invalidHandler(ChessPiece piece) throws InvalidMoveException {
         if(isInCheckmate(piece.getTeamColor())){
             throw new InvalidMoveException("Error:" + piece.getTeamColor().toString() + "is in checkmate.");

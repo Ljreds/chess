@@ -61,9 +61,18 @@ public class ConnectionManager {
             }
         }
 
-        // Clean up any connections that were left open.
         for (var c : removeList) {
             connections.remove(c.visitorName);
+        }
+    }
+
+    public void errorTransfer(Session session, ServerMessage error) throws IOException {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ServerMessage.class, new MessageAdapter());
+        Gson gson = builder.create();
+
+        if (session.isOpen()) {
+            session.getRemote().sendString(gson.toJson(error));
         }
     }
 }
