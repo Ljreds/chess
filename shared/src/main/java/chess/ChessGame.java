@@ -145,9 +145,9 @@ public class ChessGame {
 
     private boolean invalidHandler(ChessPiece piece) throws InvalidMoveException {
         if(isInCheckmate(piece.getTeamColor())){
-            throw new InvalidMoveException(piece.getTeamColor().toString() + "is in checkmate.");
+            throw new InvalidMoveException("Error:" + piece.getTeamColor().toString() + "is in checkmate.");
         }else if(isInStalemate(piece.getTeamColor())){
-            throw new InvalidMoveException(piece.getTeamColor().toString() + "is in stalemate.");
+            throw new InvalidMoveException("Error:" + piece.getTeamColor().toString() + "is in stalemate.");
         }else{
             return true;
         }

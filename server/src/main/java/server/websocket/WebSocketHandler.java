@@ -22,6 +22,7 @@ import websocket.messages.Error;
 import java.io.IOException;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 
 
@@ -84,6 +85,9 @@ public class WebSocketHandler {
 
     private void makeMove(String visitorName, UserGameCommand command) throws ResponseException, IOException {
         try {
+
+            ChessGame.TeamColor teamColor = null;
+
             int gameId = command.getGameID();
             GameData gameData = gameDao.getGame(gameId);
             ChessGame game = gameData.game();
@@ -91,27 +95,39 @@ public class WebSocketHandler {
             ChessPosition start = move.getStartPosition();
             ChessPosition end = move.getEndPosition();
             ChessPiece piece = game.getBoard().getPiece(start);
+
+            if(Objects.equals(gameData.whiteUsername(), visitorName)){
+                teamColor = WHITE;
+            }else if(Objects.equals(gameData.blackUsername(), visitorName)){
+                teamColor = BLACK;
+            }
+
             if(game.getGameStatus() == ChessGame.Status.GAME_OVER){
                 throw new InvalidMoveException("Error: Game is over");
             }else{
-                game.makeMove(command.getChessMove());
+                if(teamColor == game.getTeamTurn()){
+                    game.makeMove(command.getChessMove());
+                }else{
+                    throw new InvalidMoveException("Error: Not your turn");
+                }
+
             }
             gameDao.updateGame(gameId, game);
 
-            ChessGame.TeamColor teamColor = null;
+
             String message;
 
             if(game.isInCheckmate(WHITE)){
                 message = gameData.whiteUsername() + " is in checkmate.";
-            }else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
+            }else if(game.isInCheckmate(BLACK)){
                 message = gameData.blackUsername() + " is in checkmate.";
             }else if(game.isInCheck(WHITE)){
                 message = gameData.whiteUsername() + " is in check.";
-            }else if(game.isInCheck(ChessGame.TeamColor.BLACK)){
+            }else if(game.isInCheck(BLACK)){
                 message = gameData.blackUsername() + " is in check.";
             }else if(game.isInStalemate(WHITE)){
                 message = gameData.whiteUsername() + " is in stalemate.";
-            }else if(game.isInStalemate(ChessGame.TeamColor.BLACK)){
+            }else if(game.isInStalemate(BLACK)){
                 message = gameData.blackUsername() + " is in stalemate.";
             }else{
                 String first = positionTranslator(start);
@@ -150,11 +166,11 @@ public class WebSocketHandler {
             GameData gameData = gameDao.getGame(command.getGameID());
             String teamColor = "";
             if(Objects.equals(gameData.whiteUsername(), visitorName)){
-                teamColor = " white team";
+                teamColor = "white team";
             }else if(Objects.equals(gameData.blackUsername(), visitorName)){
-                teamColor = " black team";
+                teamColor = "black team";
             }
-            String message = String.format("%s has joined %s.", visitorName, teamColor);
+            String message = String.format("%s has joined %s", visitorName, teamColor);
 
             var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
             connections.configure(visitorName, loadGame);
