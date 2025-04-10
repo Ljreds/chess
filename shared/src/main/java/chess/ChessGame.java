@@ -118,11 +118,8 @@ public class ChessGame {
         if(movePiece != null) {
             if (invalidHandler(movePiece)) {
                 for (ChessMove validMove : validMoves) {
-                    if (move.equals(validMove)) {
-                        if(teamColor(move, movePiece)){
+                    if (move.equals(validMove) && teamColor(move, movePiece) ) {
                             return;
-                        }
-
                     }
 
                 }

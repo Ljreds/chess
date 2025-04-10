@@ -71,7 +71,7 @@ public class PostLoginClient extends Client {
             GameResult result = server.createGame(request);
             state = SIGNEDIN;
             if (result != null) {
-                gameIds.put(gameIds.size() + 1, result.gameID());
+                GAME_IDS.put(GAME_IDS.size() + 1, result.gameID());
                 return "New game created: " + params[0];
             }
             return null;
@@ -98,7 +98,7 @@ public class PostLoginClient extends Client {
         ListResult result = server.listGame(request);
         int n = 1;
         for(GameData game : result.games()){
-            gameIds.put(n, game.gameID());
+            GAME_IDS.put(n, game.gameID());
             n++;
         }
     }
@@ -109,7 +109,7 @@ public class PostLoginClient extends Client {
                 int gameId = Integer.parseInt(params[1]);
                 String color = params[0].toUpperCase();
                 teamColor = ChessGame.TeamColor.valueOf(color);
-                JoinRequest request = new JoinRequest(color, gameIds.get(gameId), authToken);
+                JoinRequest request = new JoinRequest(color, GAME_IDS.get(gameId), authToken);
                 JoinResult result = server.joinGame(request);
 
                 saveGameId = result.gameId();
@@ -135,7 +135,7 @@ public class PostLoginClient extends Client {
         if(params.length == 1) {
             try {
                 int gameId = Integer.parseInt(params[0]);
-                JoinRequest request = new JoinRequest("SPECTATE", gameIds.get(gameId), authToken);
+                JoinRequest request = new JoinRequest("SPECTATE", GAME_IDS.get(gameId), authToken);
                 JoinResult result = server.joinGame(request);
                 teamColor = WHITE;
 
