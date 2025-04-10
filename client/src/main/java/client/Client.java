@@ -17,7 +17,7 @@ public class Client {
     protected static String serverUrl;
     protected static WebSocketFacade ws;
     protected State state = SIGNEDOUT;
-    protected NotificationHandler notificationHandler = null;
+    protected static NotificationHandler notificationHandler;
     protected static final Map<Integer, Integer> gameIds = new HashMap<>();
     protected static ChessGame.TeamColor teamColor = null;
     protected static int saveGameId;
